@@ -1,0 +1,44 @@
+{
+  "developers": [
+    {
+      "avatar": "/images/profiles/dev1.jpg",
+      "nickname": "Flight."
+    },
+    {
+      "avatar": "/images/profiles/dev2.jpg",
+      "nickname": "HZ-CZY"
+    },
+    {
+      "avatar": "/images/profiles/dev3.jpg",
+      "nickname": "Kesally"
+    },
+    {
+      "avatar": "/images/profiles/dev4.jpg",
+      "nickname": "布森"
+    }
+
+  ],
+  "participants": [
+    {
+      "avatar": "member1.jpg",
+      "nickname": "Kesally"
+    },
+    {
+      "avatar": "member2.png",
+      "nickname": "小红同学"
+    },
+    {
+      "avatar": "member3.jpg",
+      "nickname": "小李同学"
+    },
+    {
+      "avatar": "member4.png",
+      "nickname": "小王同学"
+    },
+    {
+      "avatar": "member5.jpg",
+      "nickname": "小张同学"
+    }
+  ]
+}
+

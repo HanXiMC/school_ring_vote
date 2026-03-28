@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>起床铃音频批量下载</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #004d99;
+            --bg: #f0f8ff;
+        }
+        
+        body {
+            font-family: '微软雅黑', sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .tips {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+        }
+
+        .song-list {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .song-list th, .song-list td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .song-list th {
+            background-color: #f8f9fa;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .song-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .song-source {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #004d99, #3498db);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .download-btn.disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-cloud-download-alt"></i> 起床铃音频资源下载</h1>
+        <p>点击下方按钮即可下载 MP3 文件</p>
+    </div>
+
+    <div class="tips">
+        <i class="fas fa-info-circle"></i> 
+        <strong>提示：</strong> 下载的文件名为“歌手 - 歌名.mp3”格式。
+    </div>
+
+    <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> 正在加载歌曲列表...
+    </div>
+
+    <table class="song-list" id="songTable" style="display: none;">
+        <thead>
+            <tr>
+                <th style="width: 10%;">ID</th>
+                <th style="width: 60%;">歌曲信息</th>
+                <th style="width: 30%; text-align: right;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="listBody">
+            <!-- 列表将通过 JS 渲染 -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 页面加载时获取列表
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('music_manager.php')
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('songTable').style.display = 'table';
+                
+                if (result.success && result.data) {
+                    renderList(result.data);
+                } else {
+                    alert('获取数据失败');
+                }
+            })
+            .catch(err => {
+                document.getElementById('loading').innerHTML = '加载失败，请检查网络或后台';
+            });
+    });
+
+    function renderList(songs) {
+        const tbody = document.getElementById('listBody');
+        tbody.innerHTML = '';
+
+        if (songs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">暂无歌曲数据</td></tr>';
+            return;
+        }
+
+        songs.forEach(song => {
+            const tr = document.createElement('tr');
+            
+            // 判断来源显示
+            let sourceTag = '';
+            if (song.source === 'netease') sourceTag = '网易云音乐直连';
+            else if (song.source === 'qq') sourceTag = 'QQ音乐';
+            else sourceTag = '本地上传';
+
+            // 判断是否有高音质
+            if (song.url_high) sourceTag += ' <span style="color:red;font-weight:bold;">(高音质)</span>';
+
+            tr.innerHTML = `
+                <td>${song.id}</td>
+                <td>
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-source">${sourceTag}</div>
+                </td>
+                <td style="text-align: right;">
+                    <button onclick="downloadSong(${song.id}, '${song.title.replace(/'/g, "\\'")}')" class="download-btn">
+                        <i class="fas fa-download"></i> 下载 MP3
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function downloadSong(id, title) {
+        const url = `download_handler.php?id=${id}`;
+        window.location.href = url;
+    }
+</script>
+
+</body>
+</html>
