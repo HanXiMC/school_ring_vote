@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问题反馈 - 起床铃投票系统</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    <style>
+        :root {
+            --primary: #004d99;
+            --primary-light: #0066cc;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light-bg: #f0f8ff;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #666;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', '微软雅黑', sans-serif;
+        }
+        
+        html {
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e6f2ff, #f0f8ff);
+            color: var(--text);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 120px; /* 为底部导航栏留空间 */
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(0, 77, 153, 0.05) 0%, transparent 15%),
+                radial-gradient(circle at 90% 80%, rgba(52, 152, 219, 0.05) 0%, transparent 15%);
+            z-index: -1;
+        }
+        
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: headerFloat 6s ease-in-out infinite;
+        }
+        
+        @keyframes headerFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* === Q&A 板块样式 === */
+        .qa-section {
+            margin-bottom: 20px;
+        }
+        
+        .feedback-btn-container {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed rgba(0, 77, 153, 0.2);
+        }
+        
+        .feedback-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            text-decoration: none;
+        }
+        
+        .feedback-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        .feedback-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .qa-header {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .qa-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .qa-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        
+        .qa-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        
+        .qa-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .qa-answer {
+            color: var(--text-light);
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+            padding-left: 28px;
+        }
+        
+        /* === 反馈表单区域（展开式）=== */
+        .form-section {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.3s ease, margin 0.3s ease;
+            margin-bottom: 0;
+        }
+        
+        .form-section.active {
+            max-height: 2000px;
+            opacity: 1;
+            margin-bottom: 25px;
+            animation: fadeInUp 0.4s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-3px);
+        }
+        
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 14px 18px;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.6);
+            font-size: 16px;
+            outline: none;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            background: rgba(255,255,255,0.95);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--secondary), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .submit-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* === 底部玻璃拟态导航栏 === */
+        .glass-navbar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            min-width: 400px;
+            max-width: 600px;
+            z-index: 999;
+            transition: all 0.3s ease;
+            width: fit-content;
+        }
+
+        .navbar-slider {
+            position: absolute;
+            bottom: 8px;
+            height: 4px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            color: var(--text-light);
+            text-decoration: none;
+            flex: 0 0 auto;
+            max-width: 120px;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .nav-item span {
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            color: var(--primary-light);
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .nav-item.active {
+            color: #1976d2;
+        }
+
+        .nav-item.active i {
+            transform: scale(1.15) translateY(-3px);
+        }
+
+        .nav-item:active i {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            .glass-navbar {
+                min-width: calc(100% - 40px);
+                max-width: calc(100% - 40px);
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 10px 15px;
+                bottom: 20px;
+                gap: 5px;
+                width: calc(100% - 40px);
+            }
+
+            .nav-item {
+                padding: 8px 12px;
+                max-width: 100px;
+                flex: 0 0 auto;
+            }
+
+            .nav-item i {
+                font-size: 18px;
+            }
+
+            .nav-item span {
+                font-size: 12px;
+            }
+            
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-navbar {
+                min-width: calc(100% - 30px);
+                max-width: calc(100% - 30px);
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 8px 12px;
+                bottom: 15px;
+                gap: 3px;
+                width: calc(100% - 30px);
+            }
+
+            .nav-item {
+                padding: 6px 8px;
+                max-width: 90px;
+                flex: 0 0 auto;
+            }
+
+            .nav-item i {
+                font-size: 16px;
+            }
+
+            .nav-item span {
+                font-size: 11px;
+            }
+            
+            header h1 {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* 成功提示样式 */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            display: none;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        /* === 全局音乐播放器底部播放条样式 === */
+        .music-player-bar {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 860px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .music-player-bar.active {
+            opacity: 1;
+            visibility: visible;
+            bottom: 100px;
+        }
+        
+        .player-album-cover {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .player-album-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .player-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .player-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .player-artist {
+            font-size: 12px;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .player-controls {
+            flex-shrink: 0;
+        }
+        
+        .player-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary-light));
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .player-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+        
+        .player-btn:active {
+            transform: scale(0.95);
+        }
+        
+        @media (max-width: 768px) {
+            .music-player-bar {
+                width: calc(100% - 30px);
+                bottom: 90px;
+            }
+        }
+        
+        /* === 全屏歌词播放器样式 === */
+        .full-screen-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .full-screen-player.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .fsp-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+        
+        .fsp-back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .fsp-back-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .fsp-song-info {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            flex: 1;
+        }
+        
+        .fsp-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+        
+        .fsp-artist {
+            font-size: 14px;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+        
+        .fsp-spacer {
+            width: 50px;
+        }
+        
+        .fsp-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .fsp-album-art {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+        
+        .fsp-album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .fsp-album-art.playing {
+            animation: albumRotate 20s linear infinite;
+        }
+        
+        @keyframes albumRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .fsp-lyrics-container {
+            width: 100%;
+            max-width: 600px;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+        }
+        
+        .fsp-lyrics-scroll {
+            height: 100%;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding: 80px 0;
+            scrollbar-width: none;
+        }
+        
+        .fsp-lyrics-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .fsp-lyric-line {
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+        
+        .fsp-lyric-line.active {
+            font-size: 28px;
+            color: #ffffff;
+            font-weight: 700;
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .fsp-controls {
+            padding: 20px 30px 40px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .fsp-progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .fsp-current-time,
+        .fsp-duration {
+            color: white;
+            font-size: 14px;
+            min-width: 45px;
+            text-align: center;
+        }
+        
+        .fsp-progress-slider {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .fsp-progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .fsp-progress-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .fsp-progress-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s ease;
+        }
+        
+        .fsp-progress-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .fsp-control-buttons {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .fsp-ctrl-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            color: #1a1a1a;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .fsp-ctrl-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .fsp-ctrl-btn:active {
+            transform: scale(0.95);
+        }
+        
+        @media (max-width: 768px) {
+            .fsp-album-art {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .fsp-lyric-line {
+                font-size: 16px;
+            }
+            
+            .fsp-lyric-line.active {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-comment-dots"></i> 问题反馈</h1>
+        <p>如果您在使用过程中遇到任何问题，欢迎向我们反馈</p>
+    </header>
+    
+    <div class="container">
+        <!-- Q&A 常见问题列表 -->
+        <div id="qaSection" class="qa-section active">
+            <div class="feedback-btn-container">
+                <button class="feedback-btn" id="feedbackToggleBtn" onclick="toggleFeedbackForm()">
+                    <i class="fas fa-edit"></i>
+                    <span>点我反馈</span>
+                </button>
+            </div>
+            
+            <!-- 反馈表单区域（展开式） -->
+            <div id="formSection" class="form-section">
+                <form class="feedback-form" id="feedbackForm">
+                    <div class="form-group">
+                        <label for="feedbackType">
+                            <i class="fas fa-tag"></i> 反馈类型
+                        </label>
+                        <select id="feedbackType" required>
+                            <option value="">请选择反馈类型</option>
+                            <option value="bug">功能异常/Bug 报告</option>
+                            <option value="suggestion">功能建议</option>
+                            <option value="music">音乐相关问题</option>
+                            <option value="ui">界面/体验问题</option>
+                            <option value="other">其他问题</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact">
+                            <i class="fas fa-envelope"></i> 联系方式（选填）
+                        </label>
+                        <input type="text" id="contact" placeholder="您的邮箱或手机号（方便我们回复）">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackContent">
+                            <i class="fas fa-edit"></i> 问题描述
+                        </label>
+                        <textarea id="feedbackContent" required placeholder="请详细描述您遇到的问题或建议，我们将认真听取您的每一条反馈..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> 提交反馈
+                    </button>
+                </form>
+            </div>
+            
+            <h3 class="qa-header">
+                <i class="fas fa-question-circle"></i> 常见问题 (Q&A)
+            </h3>
+            <div class="qa-list" id="qa-list">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <div>加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 成功提示 -->
+    <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i> 反馈提交成功！感谢您的宝贵意见
+    </div>
+    
+    <!-- 底部玻璃拟态导航栏 -->
+    <nav class="glass-navbar">
+        <div class="navbar-slider" id="navbarSlider"></div>
+        <a href="../vote/vote.html" class="nav-item" data-page="vote">
+            <i class="ri-music-2-fill"></i>
+            <span>歌曲投票</span>
+        </a>
+        <a href="../submit/index.html" class="nav-item" data-page="submit">
+            <i class="ri-upload-cloud-2-line"></i>
+            <span>歌曲投稿</span>
+        </a>
+        <a href="../vote/navigate.html" class="nav-item" data-page="profile">
+            <i class="ri-user-smile-line"></i>
+            <span>个人中心</span>
+        </a>
+        <a href="index.html" class="nav-item active" data-page="feedback">
+            <i class="ri-feedback-line"></i>
+            <span>问题反馈</span>
+        </a>
+    </nav>
+    
+    <!-- 全局音乐播放器底部播放条 -->
+    <div class="music-player-bar" id="globalMusicPlayerBar">
+        <div class="player-album-cover" id="globalPlayerCover">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%23999' font-size='40'%3E♪%3C/text%3E%3C/svg%3E" alt="专辑封面" id="globalPlayerCoverImg">
+        </div>
+        <div class="player-info" id="globalPlayerInfo">
+            <div class="player-title" id="globalPlayerTitle">未播放</div>
+            <div class="player-artist" id="globalPlayerArtist">点击投票页或投稿页播放音乐</div>
+        </div>
+        <div class="player-controls">
+            <button class="player-btn" id="globalPlayerPlayBtn">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 全屏歌词播放器 -->
+    <div class="full-screen-player" id="fullScreenPlayer">
+        <div class="fsp-header">
+            <button class="fsp-back-btn" id="fspBackBtn">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="fsp-song-info">
+                <div class="fsp-title" id="fspTitle">歌曲标题</div>
+                <div class="fsp-artist" id="fspArtist">歌手信息</div>
+            </div>
+            <div class="fsp-spacer"></div>
+        </div>
+        
+        <div class="fsp-content">
+            <div class="fsp-album-art">
+                <img src="" alt="专辑封面" id="fspAlbumCover">
+            </div>
+            <div class="fsp-lyrics-container" id="fspLyricsContainer">
+                <div class="fsp-lyrics-scroll" id="fspLyricsScroll">
+                    <div class="fsp-lyric-line active">暂无歌词</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="fsp-controls">
+            <div class="fsp-progress-bar">
+                <span class="fsp-current-time" id="fspCurrentTime">0:00</span>
+                <input type="range" class="fsp-progress-slider" id="fspProgressSlider" min="0" max="100" value="0" step="0.1">
+                <span class="fsp-duration" id="fspDuration">0:00</span>
+            </div>
+            <div class="fsp-control-buttons">
+                <button class="fsp-ctrl-btn" id="fspPlayPauseBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换反馈表单展开/收起
+        function toggleFeedbackForm() {
+            const formSection = document.getElementById('formSection');
+            const toggleBtn = document.getElementById('feedbackToggleBtn');
+            
+            formSection.classList.toggle('active');
+            
+            if (formSection.classList.contains('active')) {
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i><span>收起表单</span>';
+                // 平滑滚动到表单位置
+                setTimeout(() => {
+                    formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-edit"></i><span>问题反馈</span>';
+            }
+        }
+        
+        // 表单提交处理
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const feedbackType = document.getElementById('feedbackType').value;
+            const contact = document.getElementById('contact').value.trim();
+            const content = document.getElementById('feedbackContent').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (!feedbackType) {
+                alert('请选择反馈类型');
+                return;
+            }
+            
+            if (!content) {
+                alert('请填写问题描述');
+                return;
+            }
+            
+            // 禁用按钮
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
+            
+            // 构造反馈内容
+            const feedbackData = {
+                action: 'submit_feedback',
+                type: feedbackType,
+                contact: contact,
+                content: `[${getTypeName(feedbackType)}] ${content}${contact ? ' | 联系方式：' + contact : ''}`
+            };
+            
+            // 发送到后端
+            fetch('../submit/api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(feedbackData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 显示成功提示
+                    successMessage.style.display = 'block';
+                    
+                    // 重置表单
+                    document.getElementById('feedbackForm').reset();
+                    
+                    // 3 秒后隐藏提示并收起表单
+                    setTimeout(() => {
+                        successMessage.style.animation = 'slideOutRight 0.3s ease';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交反馈';
+                            // 收起表单并恢复按钮文字
+                            toggleFeedbackForm();
+                        }, 300);
+                    }, 3000);
+                } else {
+                    alert('提交失败：' + (data.message || '未知错误'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交反馈';
+                }
+            })
+            .catch(err => {
+                console.error('提交异常:', err);
+                alert('网络错误，请稍后重试');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交反馈';
+            });
+        });
+        
+        // 获取类型名称
+        function getTypeName(type) {
+            const typeMap = {
+                'bug': '功能异常',
+                'suggestion': '功能建议',
+                'music': '音乐问题',
+                'ui': '界面体验',
+                'other': '其他问题'
+            };
+            return typeMap[type] || '未知类型';
+        }
+        
+        // 切换反馈表单展开/收起
+        function toggleFeedbackForm() {
+            const formSection = document.getElementById('formSection');
+            const toggleBtn = document.getElementById('feedbackToggleBtn');
+            
+            formSection.classList.toggle('active');
+            
+            if (formSection.classList.contains('active')) {
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i><span>收起表单</span>';
+                // 平滑滚动到表单位置
+                setTimeout(() => {
+                    formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-edit"></i><span>问题反馈</span>';
+            }
+        }
+        
+        // 获取Q&A列表
+        function loadQA() {
+            fetch('../submit/api.php?action=get_qa')
+                .then(res => res.json())
+                .then(data => {
+                    const qaList = document.getElementById('qa-list');
+                    if (data.status === 'success' && data.qa && data.qa.length > 0) {
+                        qaList.innerHTML = data.qa.map(item => `
+                            <div class="qa-card">
+                                <div class="qa-question"><i class="fas fa-q"></i> ${item.question}</div>
+                                <div class="qa-answer"><i class="fas fa-a"></i> ${item.answer}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        qaList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><div>暂无常见问题</div></div>';
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('qa-list').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle" style="color: #e74c3c;"></i><div>Q&A加载失败</div></div>';
+                });
+        }
+        
+        // 初始化底部导航栏
+        function initGlassNavbar() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const slider = document.getElementById('navbarSlider');
+            
+            function moveSlider(item) {
+                const itemWidth = item.offsetWidth;
+                const itemLeft = item.offsetLeft;
+                const sliderWidth = itemWidth - 16;
+                
+                slider.style.width = sliderWidth + 'px';
+                slider.style.left = (itemLeft + 8) + 'px';
+            }
+            
+            const activeItem = document.querySelector('.nav-item.active');
+            if (activeItem) {
+                setTimeout(() => moveSlider(activeItem), 100);
+            }
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    setTimeout(() => {
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        this.classList.add('active');
+                        moveSlider(this);
+                    }, 100);
+                    
+                    const targetPage = this.getAttribute('href');
+                    console.log('导航到：' + targetPage);
+                });
+                
+                item.addEventListener('mousedown', function() {
+                    const icon = this.querySelector('i');
+                    icon.style.transform = 'scale(0.95)';
+                });
+                
+                item.addEventListener('mouseup', function() {
+                    const icon = this.querySelector('i');
+                    if (this.classList.contains('active')) {
+                        icon.style.transform = 'scale(1.15) translateY(-3px)';
+                    } else {
+                        icon.style.transform = '';
+                    }
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    const icon = this.querySelector('i');
+                    if (this.classList.contains('active')) {
+                        icon.style.transform = 'scale(1.15) translateY(-3px)';
+                    } else {
+                        icon.style.transform = '';
+                    }
+                });
+            });
+            
+            window.addEventListener('resize', () => {
+                const currentItem = document.querySelector('.nav-item.active');
+                if (currentItem) {
+                    moveSlider(currentItem);
+                }
+            });
+        }
+        
+        // 页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            initGlassNavbar();
+            loadQA();
+            initGlobalMusicPlayerBar();
+            initFullScreenPlayer();
+        });
+        
+        // ==================== 全局音乐播放器初始化 ====================
+        function initGlobalMusicPlayerBar() {
+            const playerBar = document.getElementById('globalMusicPlayerBar');
+            const playBtn = document.getElementById('globalPlayerPlayBtn');
+            const coverImg = document.getElementById('globalPlayerCoverImg');
+            const titleEl = document.getElementById('globalPlayerTitle');
+            const artistEl = document.getElementById('globalPlayerArtist');
+            
+            if (!playerBar || !playBtn) return;
+            
+            // 检查是否有待播放的歌曲
+            const currentSong = window.GlobalMusicManager ? window.GlobalMusicManager.getCurrentSong() : null;
+            if (currentSong && currentSong.url) {
+                // 显示播放条
+                playerBar.classList.add('active');
+                titleEl.textContent = currentSong.name || '未知歌曲';
+                artistEl.textContent = currentSong.artist || '未知歌手';
+                if (currentSong.coverUrl) {
+                    coverImg.src = currentSong.coverUrl;
+                }
+                
+                // 更新播放按钮图标
+                updatePlayButtonIcon();
+            }
+            
+            // 监听播放/暂停按钮点击
+            playBtn.addEventListener('click', function() {
+                if (window.GlobalMusicManager) {
+                    window.GlobalMusicManager.toggle();
+                }
+            });
+            
+            // 点击播放条打开全屏播放器
+            playerBar.addEventListener('click', function(e) {
+                // 如果点击的不是播放按钮，则打开全屏播放器
+                if (!e.target.closest('.player-btn')) {
+                    openFullScreenPlayer();
+                }
+            });
+            
+            // 监听全局音乐状态变化
+            window.addEventListener('globalMusicPlayStateChange', function(e) {
+                updatePlayButtonIcon();
+                updateFullScreenPlayerState();
+            });
+            
+            // 监听歌曲加载事件
+            window.addEventListener('globalMusicSongLoaded', function(e) {
+                const songData = e.detail;
+                if (songData) {
+                    playerBar.classList.add('active');
+                    titleEl.textContent = songData.name || '未知歌曲';
+                    artistEl.textContent = songData.artist || '未知歌手';
+                    if (songData.coverUrl) {
+                        coverImg.src = songData.coverUrl;
+                    }
+                    
+                    // 如果有歌曲ID，获取歌词和封面
+                    if (songData.id) {
+                        fetchMusicDetail(songData.id);
+                        fetchLyricForSuggestion(songData.id);
+                    }
+                }
+            });
+            
+            // 更新播放按钮图标
+            function updatePlayButtonIcon() {
+                const isPlaying = window.GlobalMusicManager ? window.GlobalMusicManager.isPlaying() : false;
+                playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+            }
+        }
+        
+        // ==================== 全屏播放器功能 ====================
+        let currentSongLyrics = [];
+        let isUserScrolling = false;
+        let scrollTimeout = null;
+        let lastScrollTime = 0;
+        
+        // 打开全屏播放器
+        function openFullScreenPlayer() {
+            const fsp = document.getElementById('fullScreenPlayer');
+            if (fsp) {
+                fsp.classList.add('active');
+                
+                // 更新全屏播放器信息
+                const currentSong = window.GlobalMusicManager ? window.GlobalMusicManager.getCurrentSong() : null;
+                if (currentSong) {
+                    document.getElementById('fspTitle').textContent = currentSong.name || '未知歌曲';
+                    document.getElementById('fspArtist').textContent = currentSong.artist || '未知歌手';
+                    
+                    const albumCover = document.getElementById('fspAlbumCover');
+                    if (albumCover && currentSong.coverUrl) {
+                        albumCover.src = currentSong.coverUrl;
+                    }
+                    
+                    // 如果有音频正在播放，立即更新歌词
+                    const audio = window.GlobalMusicManager ? window.GlobalMusicManager.getAudio() : null;
+                    if (audio && currentSongLyrics.length > 0) {
+                        updateFullScreenPlayer(currentSongLyrics, audio.currentTime, audio.duration, !audio.paused);
+                    }
+                }
+            }
+        }
+        
+        // 关闭全屏播放器
+        function closeFullScreenPlayer() {
+            const fsp = document.getElementById('fullScreenPlayer');
+            if (fsp) {
+                fsp.classList.remove('active');
+            }
+        }
+        
+        // 获取歌曲详情（封面）
+        function fetchMusicDetail(songId) {
+            fetch(`../submit/api.php?action=music_detail&id=${songId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.songs && data.songs[0]) {
+                        const song = data.songs[0];
+                        
+                        // 获取封面
+                        if (song.al && song.al.picUrl) {
+                            const coverUrl = song.al.picUrl;
+                            const albumCover = document.getElementById('fspAlbumCover');
+                            if (albumCover) {
+                                albumCover.src = coverUrl;
+                            }
+                            
+                            // 更新底部播放条封面
+                            const globalCoverImg = document.getElementById('globalPlayerCoverImg');
+                            if (globalCoverImg) {
+                                globalCoverImg.src = coverUrl;
+                            }
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('获取歌曲详情失败:', err);
+                });
+        }
+        
+        // 解析LRC歌词
+        function parseLrc(lrcText) {
+            const lines = lrcText.split('\n');
+            const result = [];
+            const timeReg = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/;
+            
+            lines.forEach(line => {
+                const match = timeReg.exec(line);
+                if (match) {
+                    const min = parseInt(match[1]);
+                    const sec = parseInt(match[2]);
+                    const ms = match[3] ? parseFloat("0." + match[3]) : 0;
+                    const time = min * 60 + sec + ms;
+                    const text = line.replace(timeReg, '').trim();
+                    if (text) {
+                        result.push({ time, text });
+                    }
+                }
+            });
+            
+            return result.sort((a, b) => a.time - b.time);
+        }
+        
+        // 获取歌词
+        function fetchLyricForSuggestion(songId) {
+            currentSongLyrics = [];
+            
+            const lyricUrl = `https://music.163.com/api/song/lyric?os=pc&id=${songId}&lv=-1`;
+            
+            fetch(`../vote/music_api_handler.php?action=get_lyric&url=${encodeURIComponent(lyricUrl)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.lrc && data.lrc.lyric) {
+                        currentSongLyrics = parseLrc(data.lrc.lyric);
+                        
+                        // 如果全屏播放器已打开，立即更新
+                        const audio = window.GlobalMusicManager ? window.GlobalMusicManager.getAudio() : null;
+                        if (audio && document.getElementById('fullScreenPlayer').classList.contains('active')) {
+                            updateFullScreenPlayer(currentSongLyrics, audio.currentTime, audio.duration, !audio.paused);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('获取歌词失败:', err);
+                    currentSongLyrics = [];
+                });
+        }
+        
+        // 更新全屏播放器
+        function updateFullScreenPlayer(lyrics, currentTime, duration, isPlaying) {
+            const lyricsScroll = document.getElementById('fspLyricsScroll');
+            if (!lyricsScroll || !lyrics || lyrics.length === 0) return;
+            
+            // 生成歌词HTML
+            let html = '';
+            lyrics.forEach((line, index) => {
+                html += `<div class="fsp-lyric-line" data-index="${index}">${line.text}</div>`;
+            });
+            lyricsScroll.innerHTML = html;
+            
+            // 找到当前应该高亮的歌词行
+            let curIndex = -1;
+            for (let i = 0; i < lyrics.length; i++) {
+                if (currentTime >= lyrics[i].time) {
+                    curIndex = i;
+                } else {
+                    break;
+                }
+            }
+            
+            // 移除所有active类
+            const lines = lyricsScroll.querySelectorAll('.fsp-lyric-line');
+            lines.forEach(line => line.classList.remove('active'));
+            
+            // 添加active类到当前行
+            if (curIndex >= 0 && lines[curIndex]) {
+                lines[curIndex].classList.add('active');
+                // 只有在用户没有手动滚动时才自动滚动
+                if (!isUserScrolling) {
+                    lines[curIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            // 更新时间显示
+            document.getElementById('fspCurrentTime').textContent = formatTime(currentTime);
+            document.getElementById('fspDuration').textContent = formatTime(duration);
+            
+            // 更新进度条
+            const slider = document.getElementById('fspProgressSlider');
+            if (slider && duration > 0) {
+                slider.value = (currentTime / duration) * 100;
+            }
+            
+            // 更新专辑封面旋转状态
+            const albumArt = document.querySelector('.fsp-album-art');
+            if (albumArt) {
+                if (isPlaying) {
+                    albumArt.classList.add('playing');
+                } else {
+                    albumArt.classList.remove('playing');
+                }
+            }
+        }
+        
+        // 更新全屏播放器状态
+        function updateFullScreenPlayerState() {
+            const audio = window.GlobalMusicManager ? window.GlobalMusicManager.getAudio() : null;
+            if (audio && currentSongLyrics.length > 0) {
+                updateFullScreenPlayer(currentSongLyrics, audio.currentTime, audio.duration, !audio.paused);
+            }
+            
+            // 更新播放按钮
+            const playPauseBtn = document.getElementById('fspPlayPauseBtn');
+            if (playPauseBtn) {
+                const isPlaying = window.GlobalMusicManager ? window.GlobalMusicManager.isPlaying() : false;
+                playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+            }
+        }
+        
+        // 格式化时间
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // 初始化全屏播放器事件
+        function initFullScreenPlayer() {
+            const fspBackBtn = document.getElementById('fspBackBtn');
+            const fspPlayPauseBtn = document.getElementById('fspPlayPauseBtn');
+            const fspProgressSlider = document.getElementById('fspProgressSlider');
+            const fspLyricsScroll = document.getElementById('fspLyricsScroll');
+            
+            // 返回按钮
+            if (fspBackBtn) {
+                fspBackBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeFullScreenPlayer();
+                });
+            }
+            
+            // 播放/暂停按钮
+            if (fspPlayPauseBtn) {
+                fspPlayPauseBtn.addEventListener('click', function() {
+                    if (window.GlobalMusicManager) {
+                        window.GlobalMusicManager.toggle();
+                    }
+                });
+            }
+            
+            // 进度条拖动
+            if (fspProgressSlider) {
+                fspProgressSlider.addEventListener('input', function() {
+                    const audio = window.GlobalMusicManager ? window.GlobalMusicManager.getAudio() : null;
+                    if (audio) {
+                        const newTime = (this.value / 100) * audio.duration;
+                        window.GlobalMusicManager.seek(newTime);
+                    }
+                });
+            }
+            
+            // 歌词滚动事件
+            if (fspLyricsScroll) {
+                fspLyricsScroll.addEventListener('scroll', function() {
+                    isUserScrolling = true;
+                    lastScrollTime = Date.now();
+                    
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                    }
+                    
+                    scrollTimeout = setTimeout(() => {
+                        isUserScrolling = false;
+                        // 3秒后自动回位
+                        const audio = window.GlobalMusicManager ? window.GlobalMusicManager.getAudio() : null;
+                        if (audio && currentSongLyrics && currentSongLyrics.length > 0) {
+                            updateFullScreenPlayer(currentSongLyrics, audio.currentTime, audio.duration, !audio.paused);
+                        }
+                    }, 3000);
+                });
+            }
+            
+            // 定时更新歌词（每秒）
+            setInterval(() => {
+                if (document.getElementById('fullScreenPlayer').classList.contains('active')) {
+                    updateFullScreenPlayerState();
+                }
+            }, 1000);
+        }
+    </script>
+    
+    <!-- 全局音乐管理器 -->
+    <script src="../music_manager.js"></script>
+</body>
+</html>

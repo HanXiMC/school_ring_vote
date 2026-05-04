@@ -1,0 +1,30 @@
+{
+  "developers": [
+    {
+      "avatar": "/images/profiles/dev1.jpg",
+      "nickname": "Flight.(开发者)"
+    },
+    {
+      "avatar": "/images/profiles/dev2.jpg",
+      "nickname": "HZ-CZY(开发者)"
+    },
+    {
+      "avatar": "/images/profiles/dev3.jpg",
+      "nickname": "Kesally"
+    },
+    {
+      "avatar": "/images/profiles/dev4.jpg",
+      "nickname": "布森"
+    }
+
+  ],
+  "participants": [
+    {
+      "avatar": "member1.jpg",
+      "nickname": "participants不要删掉 否则前端将不显示贡献者"
+    }
+  ]
+}
+
+
+

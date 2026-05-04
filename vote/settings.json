@@ -1,0 +1,9 @@
+{
+    "vote_enabled": true,
+    "submit_enabled": false,
+    "vote_closed_message": "<div style='text-align:center'><i class='fas fa-clock' style='font-size:80px;color:#004d99;margin-bottom:20px;animation:pulse 2s infinite;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;'>还未开启投票，请耐心等待<\/p><\/div>",
+    "submit_closed_message": "<div style='text-align:center'><i class='fas fa-clock' style='font-size:80px;color:#004d99;margin-bottom:20px;animation:pulse 2s infinite;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;'>暂未开启投稿，请耐心等待<\/p><\/div>",
+    "vote_closed_icon": "",
+    "submit_closed_icon": "",
+    "updated_at": "2026-05-03 16:35:10"
+}

@@ -1,0 +1,60 @@
+{
+    "ai_reason_mode": true,
+    "qa": [
+        {
+            "id": "1771861978923",
+            "question": "一个人可以投稿多首曲目吗？",
+            "answer": "可以"
+        },
+        {
+            "id": "1771862059166",
+            "question": "为什么没有周杰伦的歌？",
+            "answer": "版权原因 网站使用的歌曲源中没有周杰伦的歌曲\n如果有需要可以在问题反馈处提交你想投稿的曲目"
+        },
+        {
+            "id": "1771862119806",
+            "question": "如果机器审核通过了，会被人工复核pass掉吗",
+            "answer": "当然会 投稿的人数众多 我们会精选符合起床铃要求的22-26首曲目开放投票"
+        },
+        {
+            "id": "1771862248415",
+            "question": "搜索后的歌可以尝试一下试听， 不然不知道想选哪个歌手（便利一点）",
+            "answer": "试听固然是一个利人利民的好提议\n但是在投稿人流量大的情况下 试听会加重服务器负担\n造成的卡顿可能影响会更大 因此 敬请期待！"
+        },
+        {
+            "id": "1771862280874",
+            "question": "好卡",
+            "answer": "我们已于2026.02.22更换新服务器 希望可以改善"
+        }
+    ],
+    "submissions": {
+        "all": [
+            {
+                "id": 1907766514,
+                "name": "11",
+                "artist": "队长",
+                "album": "11",
+                "picUrl": "https:\/\/p3.music.126.net\/DMJkxcW5QbeWg_DZMASfSw==\/109951169494228942.jpg",
+                "source": "netease",
+                "timestamp": "2026-05-01 16:29:47",
+                "ai_passed": 0
+            }
+        ],
+        "approved": [],
+        "rejected": [
+            {
+                "id": 1907766514,
+                "name": "11",
+                "artist": "队长",
+                "album": "11",
+                "picUrl": "https:\/\/p3.music.126.net\/DMJkxcW5QbeWg_DZMASfSw==\/109951169494228942.jpg",
+                "source": "netease",
+                "timestamp": "2026-05-01 16:29:47",
+                "ai_passed": 0
+            }
+        ]
+    },
+    "last_cleanup_month": "2026-04",
+    "announcement": "2026.03.05\n新增Q&amp;A板块",
+    "feedbacks": []
+}

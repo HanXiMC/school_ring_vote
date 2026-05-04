@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>新闻部管理后台 - 起床铃系统</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    <style>
+        :root {
+            --primary: #4a6cf7;
+            --primary-light: #6381ff;
+            --primary-dark: #3b5bdb;
+            --secondary: #00bcd4;
+            --accent: #ff6b6b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.18);
+            --text: #1e293b;
+            --text-light: #64748b;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        
+        html {
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        body { 
+            background: linear-gradient(135deg, #f8fafc 0%, #e8f2ff 50%, #f0f9ff 100%); 
+            color: var(--text); 
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(74, 108, 247, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 188, 212, 0.08) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+            z-index: -1;
+            will-change: transform;
+        }
+        
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-2%, -2%) scale(1.05); }
+        }
+        
+        .sidebar {
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .main-content {
+            overflow-y: visible;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.8) 0%, 
+                rgba(255, 255, 255, 0.95) 50%, 
+                rgba(255, 255, 255, 0.8) 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+            border-radius: 8px;
+        }
+        
+        .btn:active {
+            transform: none;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+        }
+        
+        img {
+            will-change: contents;
+        }
+        
+        @media (hover: none) {
+            .nav-item:hover,
+            .data-item:hover,
+            .stat-card:hover {
+                transform: none !important;
+            }
+            
+            .btn:hover {
+                transform: translateY(-2px) !important;
+            }
+            
+            .nav-item i {
+                transition: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-item,
+            .btn,
+            .data-item button {
+                touch-action: manipulation;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            
+            * {
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+        
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 50px; 
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2),
+                        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            text-align: center; 
+            width: 90%; max-width: 480px;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        @keyframes slideUp { from { transform: translateY(60px) scale(0.95); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .login-logo {
+            width: 100px; height: 100px; margin: 0 auto 25px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 42px;
+            box-shadow: 0 15px 35px rgba(74, 108, 247, 0.3);
+            position: relative;
+        }
+        
+        .login-logo::after {
+            content: '';
+            position: absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(15px);
+            opacity: 0.5;
+        }
+        
+        .login-box h3 { 
+            color: var(--text) !important;
+            margin-bottom: 30px; 
+            font-size: 28px; 
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .login-box input {
+            padding: 18px 24px; 
+            border: 2px solid rgba(74, 108, 247, 0.1); 
+            border-radius: 16px;
+            width: 100%; 
+            margin-bottom: 20px; 
+            box-sizing: border-box;
+            font-size: 16px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text) !important;
+        }
+        
+        .login-box input:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1),
+                        0 4px 12px rgba(74, 108, 247, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .login-box button {
+            padding: 18px 30px; 
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white !important;
+            border: none; 
+            border-radius: 16px; 
+            cursor: pointer;
+            width: 100%; 
+            font-size: 16px; 
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(74, 108, 247, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-box button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .login-box button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 15px 40px rgba(74, 108, 247, 0.4);
+        }
+        
+        .login-box button:hover::before {
+            left: 100%;
+        }
+        
+        .app-container { 
+            display: flex; 
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 300px; 
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            color: var(--text); 
+            position: fixed; 
+            height: 100vh; 
+            overflow-y: auto;
+            z-index: 100; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.05),
+                        inset -1px 0 0 rgba(255, 255, 255, 0.5);
+        }
+        
+        .sidebar-header {
+            padding: 35px 25px; 
+            border-bottom: 1px solid rgba(74, 108, 247, 0.1);
+            text-align: center;
+            background: linear-gradient(135deg, rgba(74, 108, 247, 0.05), transparent);
+        }
+        
+        .sidebar-header h2 { 
+            font-size: 22px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: var(--primary) !important;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-section { margin-bottom: 25px; }
+        
+        .nav-section-title {
+            padding: 12px 30px 8px; 
+            font-size: 11px; 
+            color: var(--text-light) !important;
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            font-weight: 700;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        
+        .nav-item {
+            padding: 16px 30px; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; 
+            align-items: center; 
+            gap: 14px;
+            border-left: 4px solid transparent;
+            margin: 4px 0;
+            position: relative;
+            color: var(--text) !important;
+            font-weight: 500;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: calc(100% - 16px);
+            background: linear-gradient(90deg, rgba(74, 108, 247, 0.1), transparent);
+            border-radius: 0 8px 8px 0;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover { 
+            background: rgba(74, 108, 247, 0.05);
+            border-left-color: rgba(74, 108, 247, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .nav-item:hover::before {
+            width: 100%;
+        }
+        
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(74, 108, 247, 0.15), rgba(74, 108, 247, 0.05));
+            border-left-color: var(--primary);
+            color: var(--primary);
+            box-shadow: inset 0 0 20px rgba(74, 108, 247, 0.1);
+        }
+        
+        .nav-item i { 
+            width: 20px; 
+            text-align: center; 
+            font-size: 18px; 
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item:hover i {
+            transform: scale(1.1);
+        }
+        
+        .nav-item span { flex: 1; font-size: 15px; }
+        
+        .nav-badge {
+            background: linear-gradient(135deg, var(--accent), #ff8787);
+            color: white !important;
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+        
+        .main-content {
+            margin-left: 300px; 
+            flex: 1; 
+            padding: 35px;
+            transition: 0.3s;
+            background: transparent;
+            overflow-x: hidden;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .top-bar {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 25px 35px;
+            border-radius: 20px; 
+            box-shadow: var(--shadow-lg),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+            margin-bottom: 35px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 100%;
+            background: linear-gradient(135deg, rgba(74, 108, 247, 0.03), transparent);
+            pointer-events: none;
+        }
+        
+        .top-bar h1 { 
+            font-size: 26px; 
+            color: var(--primary) !important;
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+        
+        .user-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 45px; 
+            height: 45px; 
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            color: white; 
+            font-size: 20px;
+            box-shadow: 0 8px 20px rgba(74, 108, 247, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .logout-btn {
+            padding: 10px 24px; 
+            background: linear-gradient(135deg, var(--accent), #ff8787);
+            color: white !important;
+            border: none; 
+            border-radius: 20px; 
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logout-btn:hover { 
+            background: linear-gradient(135deg, #ff5252, var(--accent));
+            transform: translateY(-3px); 
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        }
+        
+        .panel { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .panel.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 20px;
+            padding: 30px; 
+            box-shadow: var(--shadow-lg),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--secondary));
+        }
+        
+        .card-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 25px; 
+            padding-bottom: 20px; 
+            border-bottom: 2px solid rgba(74, 108, 247, 0.1);
+        }
+        
+        .card-title { 
+            font-size: 20px; 
+            color: var(--primary) !important;
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .stats-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px; 
+            margin-bottom: 35px;
+        }
+        
+        .stat-card { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+            backdrop-filter: blur(20px) saturate(180%);
+            padding: 30px; 
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(74, 108, 247, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .stat-number { 
+            font-size: 3rem; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        
+        .stat-label { 
+            color: var(--text-light) !important;
+            font-size: 14px; 
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn {
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 12px;
+            cursor: pointer; 
+            font-size: 14px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px; height: 300px;
+        }
+        
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 8px 20px rgba(74, 108, 247, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-primary:hover { 
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(74, 108, 247, 0.4);
+        }
+        
+        .btn-success { 
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-success:hover { 
+            background: linear-gradient(135deg, #34d399, var(--success));
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-danger { 
+            background: linear-gradient(135deg, var(--accent), #ff8787);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-danger:hover { 
+            background: linear-gradient(135deg, #ff8787, var(--accent));
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-warning { 
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+            color: white;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-warning:hover { 
+            background: linear-gradient(135deg, #fbbf24, var(--warning));
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-info { 
+            background: linear-gradient(135deg, var(--secondary), #06b6d4);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-info:hover { 
+            background: linear-gradient(135deg, #06b6d4, var(--secondary));
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 188, 212, 0.4);
+        }
+        
+        .btn-small { 
+            padding: 8px 16px; 
+            font-size: 13px;
+            color: white !important;
+        }
+        
+        .data-list { list-style: none; }
+        .data-item {
+            display: flex; 
+            align-items: center; 
+            padding: 20px;
+            border-bottom: 1px solid rgba(74, 108, 247, 0.1); 
+            gap: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.6);
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .data-item:hover { 
+            background: rgba(74, 108, 247, 0.1);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.05);
+        }
+        
+        .data-item img { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 12px; 
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        .data-info { 
+            flex: 1 1 calc(100% - 120px);
+            min-width: 200px;
+            max-width: 100%;
+        }
+        .data-info h4 { 
+            margin: 0 0 8px 0; 
+            font-size: 16px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            font-weight: 600;
+            color: var(--text) !important;
+        }
+        .data-info p { 
+            margin: 0; 
+            color: var(--text-light) !important;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        audio { 
+            height: 40px; 
+            outline: none;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+            max-width: 100%;
+            min-width: 250px;
+            flex: 1;
+        }
+        
+        .data-item .btn-small {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        
+        .data-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+            width: 100%;
+            order: 4;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="url"],
+        input[type="file"],
+        textarea,
+        select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(74, 108, 247, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1),
+                        0 4px 12px rgba(74, 108, 247, 0.15);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        .data-table {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .data-table thead tr {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        }
+        
+        .data-table thead th {
+            padding: 18px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: white !important;
+        }
+        
+        .data-table tbody tr {
+            border-bottom: 1px solid rgba(74, 108, 247, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .data-table tbody tr:hover {
+            background: rgba(74, 108, 247, 0.03);
+            transform: scale(1.01);
+        }
+        
+        .data-table tbody td {
+            padding: 16px 18px;
+            color: var(--text) !important;
+            font-size: 14px;
+        }
+        
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(74, 108, 247, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-color: var(--primary);
+        }
+        
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .search-input-box {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(74, 108, 247, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .search-input-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 10px !important;
+                padding-bottom: 85px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            .mobile-navbar {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 60px !important;
+                background: #ffffff !important;
+                border-top: 1px solid #e0e0e0 !important;
+                z-index: 1000 !important;
+                display: flex !important;
+                align-items: center !important;
+                overflow-x: scroll !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: none !important;
+            }
+            
+            .mobile-navbar::-webkit-scrollbar {
+                display: none !important;
+            }
+            
+            .mobile-nav-section {
+                display: inline-flex !important;
+                flex-shrink: 0 !important;
+                white-space: nowrap !important;
+                margin: 0 3px !important;
+            }
+            
+            .mobile-nav-item {
+                display: inline-flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 6px 10px !important;
+                min-width: 60px !important;
+                flex-shrink: 0 !important;
+                font-size: 11px !important;
+                gap: 3px !important;
+                color: var(--text) !important;
+                white-space: nowrap !important;
+            }
+            
+            .mobile-nav-item i {
+                font-size: 18px !important;
+            }
+            
+            .mobile-nav-item.active {
+                color: var(--primary) !important;
+            }
+            
+            .top-bar {
+                padding: 10px !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .top-bar h1 {
+                font-size: 18px !important;
+            }
+            
+            .user-avatar {
+                width: 35px !important;
+                height: 35px !important;
+            }
+            
+            .logout-btn {
+                padding: 6px 12px !important;
+                font-size: 12px !important;
+            }
+            
+            .card {
+                padding: 15px !important;
+                margin-bottom: 15px !important;
+                border-radius: 8px !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            }
+            
+            .card-header {
+                flex-direction: column !important;
+                gap: 10px !important;
+                padding-bottom: 12px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .card-title {
+                font-size: 16px !important;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .stat-card {
+                padding: 12px !important;
+                border-radius: 8px !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem !important;
+            }
+            
+            .stat-label {
+                font-size: 11px !important;
+            }
+            
+            .data-item {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                padding: 12px !important;
+                border-radius: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            
+            .data-item img {
+                width: 100% !important;
+                height: auto !important;
+                max-height: 200px !important;
+                border-radius: 6px !important;
+            }
+            
+            .data-item .data-info {
+                width: 100% !important;
+                margin: 8px 0 !important;
+            }
+            
+            .data-item audio {
+                width: 100% !important;
+                margin: 6px 0 !important;
+            }
+            
+            .data-controls {
+                flex-direction: column !important;
+                gap: 6px !important;
+                margin-top: 8px !important;
+                width: 100% !important;
+                order: 4 !important;
+            }
+            
+            .data-controls audio {
+                width: 100% !important;
+                min-width: unset !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                order: 1 !important;
+            }
+            
+            .data-controls .btn-small {
+                width: 100% !important;
+                margin: 2px 0 !important;
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                min-height: 44px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 8px !important;
+            }
+            
+            .data-controls .btn-info {
+                order: 2 !important;
+            }
+            
+            .data-controls .btn-success {
+                order: 3 !important;
+            }
+            
+            .btn {
+                padding: 8px 14px !important;
+                font-size: 13px !important;
+                border-radius: 6px !important;
+            }
+            
+            .btn-small {
+                padding: 5px 10px !important;
+                font-size: 12px !important;
+            }
+            
+            input[type="text"],
+            input[type="password"],
+            input[type="url"],
+            textarea,
+            select {
+                font-size: 16px !important;
+                padding: 10px 12px !important;
+                border-radius: 6px !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .data-table {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            .data-table table {
+                min-width: 600px !important;
+            }
+            
+            .login-box {
+                padding: 30px 20px !important;
+                width: 90% !important;
+                border-radius: 12px !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            }
+            
+            .login-box h3 {
+                font-size: 20px !important;
+            }
+            
+            .login-box input,
+            .login-box button {
+                padding: 12px 16px !important;
+                font-size: 15px !important;
+                border-radius: 8px !important;
+            }
+        }
+        
+        .switch input:checked + .slider-toggle {
+            background: linear-gradient(135deg, var(--success), #34d399);
+        }
+        
+        .switch input:checked + .slider-toggle .slider-toggle-circle {
+            transform: translateX(26px);
+        }
+        
+        .status-enabled {
+            color: var(--success);
+        }
+        
+        .status-disabled {
+            color: var(--accent);
+        }
+        
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        /* 富文本编辑器工具栏样式 */
+        .rich-editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 12px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 40px;
+            border: 1px solid rgba(74,108,247,0.15);
+            align-items: center;
+        }
+        .rich-editor-toolbar .btn-sm {
+            background: white !important;
+            padding: 6px 12px !important;
+            box-shadow: none !important;
+            border-radius: 30px !important;
+            border: 1px solid rgba(74,108,247,0.25) !important;
+            font-size: 13px !important;
+            color: #2c3e66 !important;
+        }
+        .rich-editor-toolbar .btn-sm:hover {
+            background: #eef2ff !important;
+            transform: translateY(-1px);
+        }
+        .toolbar-color-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: white;
+            padding: 0 8px;
+            border-radius: 30px;
+            height: 34px;
+            border: 1px solid rgba(74,108,247,0.25);
+        }
+        #foreColorPicker {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .rich-editor-content {
+            min-height: 280px;
+            background: white;
+            border: 2px solid rgba(74,108,247,0.2);
+            border-radius: 20px;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.6;
+            font-size: 15px;
+            transition: 0.2s;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .rich-editor-content:focus {
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74,108,247,0.1);
+            outline: none;
+        }
+        @media (max-width: 768px) {
+            .rich-editor-toolbar {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+            .rich-editor-content {
+                min-height: 220px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <div class="login-logo"><i class="fas fa-shield-alt"></i></div>
+            <h3>管理员验证</h3>
+            <input type="password" id="admin-pwd" placeholder="请输入管理员密码" onkeypress="if(event.key==='Enter') login()">
+            <button onclick="login()">登 录</button>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div class="app-container" id="app-container" style="display:none;">
+        <!-- 侧边栏 (PC 端) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-cogs"></i> 新闻部管理后台</h2>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">投稿管理</div>
+                <div class="nav-item active" onclick="switchModule('submit-all')">
+                    <i class="fas fa-list"></i>
+                    <span>全部投稿</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">反馈管理</div>
+                <div class="nav-item" onclick="switchModule('feedback-list')">
+                    <i class="fas fa-comments"></i>
+                    <span>用户反馈</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('submit-qa')">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Q&A 管理</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">投票管理</div>
+                <div class="nav-item" onclick="switchModule('vote-music')">
+                    <i class="fas fa-music"></i>
+                    <span>音乐管理</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('vote-stats')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>投票统计</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('vote-records')">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>投票记录</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('vote-download')">
+                    <i class="fas fa-cloud-download-alt"></i>
+                    <span>歌曲下载管理</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('vote-reset')">
+                    <i class="fas fa-hdd"></i>
+                    <span>音频管理</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">系统设置</div>
+                <div class="nav-item" onclick="switchModule('settings-announcement')">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>公告管理</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('settings-feature')">
+                    <i class="fas fa-toggle-on"></i>
+                    <span>功能控制</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('settings-backup')">
+                    <i class="fas fa-database"></i>
+                    <span>备份管理</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('settings-system')">
+                    <i class="fas fa-cog"></i>
+                    <span>系统设置</span>
+                </div>
+                <div class="nav-item" onclick="switchModule('settings-changelog')">
+                    <i class="fas fa-history"></i>
+                    <span>更新日志</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 移动端底部导航栏 -->
+        <nav class="mobile-navbar" id="mobileNavbar" style="display: none;">
+            <div class="mobile-nav-section">
+                <div class="mobile-nav-item active" onclick="switchModule('submit-all'); updateMobileNavActive(this)">
+                    <i class="fas fa-list"></i>
+                    <span>全部</span>
+                </div>
+            </div>
+            
+            <div class="mobile-nav-section">
+                <div class="mobile-nav-item" onclick="switchModule('feedback-list'); updateMobileNavActive(this)">
+                    <i class="fas fa-comments"></i>
+                    <span>反馈</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('submit-qa'); updateMobileNavActive(this)">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Q&A</span>
+                </div>
+            </div>
+            
+            <div class="mobile-nav-section">
+                <div class="mobile-nav-item" onclick="switchModule('vote-music'); updateMobileNavActive(this)">
+                    <i class="fas fa-music"></i>
+                    <span>音乐</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('vote-stats'); updateMobileNavActive(this)">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>统计</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('vote-records'); updateMobileNavActive(this)">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>记录</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('vote-download'); updateMobileNavActive(this)">
+                    <i class="fas fa-cloud-download-alt"></i>
+                    <span>下载</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('vote-reset'); updateMobileNavActive(this)">
+                    <i class="fas fa-redo"></i>
+                    <span>重置</span>
+                </div>
+            </div>
+            
+            <div class="mobile-nav-section">
+                <div class="mobile-nav-item" onclick="switchModule('settings-announcement'); updateMobileNavActive(this)">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>公告</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('settings-feature'); updateMobileNavActive(this)">
+                    <i class="fas fa-toggle-on"></i>
+                    <span>功能</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('settings-backup'); updateMobileNavActive(this)">
+                    <i class="fas fa-database"></i>
+                    <span>备份</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('settings-system'); updateMobileNavActive(this)">
+                    <i class="fas fa-cog"></i>
+                    <span>设置</span>
+                </div>
+                <div class="mobile-nav-item" onclick="switchModule('settings-changelog'); updateMobileNavActive(this)">
+                    <i class="fas fa-history"></i>
+                    <span>日志</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <div class="top-bar">
+                <h1 id="pageTitle"><i class="fas fa-home"></i> 首页</h1>
+                <div class="user-info">
+                    <div class="user-avatar"><i class="fas fa-user"></i></div>
+                    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
+                </div>
+            </div>
+
+            <!-- 功能控制模块 -->
+            <div id="settings-feature" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-toggle-on"></i> 功能控制</h3>
+                        <button class="btn btn-primary" onclick="saveFeatureSettings()"><i class="fas fa-save"></i> 保存设置</button>
+                    </div>
+                    
+                    <!-- 功能开关控制 -->
+                    <div style="margin-bottom:30px;">
+                        <h4 style="margin-bottom:15px;color:var(--primary);"><i class="fas fa-power-off"></i> 功能开关</h4>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+                            <!-- 投票功能开关 -->
+                            <div style="background:#f8f9fa;padding:20px;border-radius:12px;border-left:4px solid var(--success);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <h5 style="margin:0 0 5px 0;color:var(--text);font-size:16px;"><i class="fas fa-vote-yea" style="color:var(--success);margin-right:8px;"></i>投票功能</h5>
+                                        <p style="margin:0;font-size:13px;color:var(--text-light);">控制用户端投票页面的可用性</p>
+                                    </div>
+                                    <label class="switch" style="position:relative;display:inline-block;width:60px;height:34px;flex-shrink:0;">
+                                        <input type="checkbox" id="voteEnabledToggle" onchange="updateVoteToggleVisual(this)" style="opacity:0;width:0;height:0;">
+                                        <span class="slider-toggle" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:34px;">
+                                            <span class="slider-toggle-circle" style="position:absolute;content:'';height:26px;width:26px;left:4px;bottom:4px;background-color:white;transition:.4s;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.2);"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div id="voteStatusText" style="margin-top:10px;font-size:13px;font-weight:600;"></div>
+                            </div>
+                            
+                            <!-- 投稿功能开关 -->
+                            <div style="background:#f8f9fa;padding:20px;border-radius:12px;border-left:4px solid var(--primary);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <h5 style="margin:0 0 5px 0;color:var(--text);font-size:16px;"><i class="fas fa-upload" style="color:var(--primary);margin-right:8px;"></i>投稿功能</h5>
+                                        <p style="margin:0;font-size:13px;color:var(--text-light);">控制用户端投稿页面的可用性</p>
+                                    </div>
+                                    <label class="switch" style="position:relative;display:inline-block;width:60px;height:34px;flex-shrink:0;">
+                                        <input type="checkbox" id="submitEnabledToggle" onchange="updateSubmitToggleVisual(this)" style="opacity:0;width:0;height:0;">
+                                        <span class="slider-toggle" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:34px;">
+                                            <span class="slider-toggle-circle" style="position:absolute;content:'';height:26px;width:26px;left:4px;bottom:4px;background-color:white;transition:.4s;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.2);"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div id="submitStatusText" style="margin-top:10px;font-size:13px;font-weight:600;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 自定义提示消息 -->
+                    <div>
+                        <h4 style="margin-bottom:15px;color:var(--primary);"><i class="fas fa-comment-dots"></i> 关闭提示消息（支持 HTML）</h4>
+                        
+                        <div style="background:#f8f9fa;padding:20px;border-radius:12px;margin-bottom:20px;">
+                            <div style="margin-bottom:20px;">
+                                <label style="display:block;margin-bottom:8px;font-weight:600;color:var(--text);"><i class="fas fa-vote-yea" style="color:var(--success);margin-right:8px;"></i>投票页关闭提示</label>
+                                <textarea id="voteClosedMessage" placeholder="输入投票页关闭时显示的提示消息（支持 HTML 格式）" style="width:100%;min-height:100px;padding:12px;border:2px solid rgba(74,108,247,0.1);border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;"></textarea>
+                                <div style="margin-top:8px;font-size:12px;color:var(--text-light);">
+                                    <i class="fas fa-info-circle"></i> 可使用 Font Awesome 图标，如：<code>&lt;i class="fas fa-clock"&gt;&lt;/i&gt;</code>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label style="display:block;margin-bottom:8px;font-weight:600;color:var(--text);"><i class="fas fa-upload" style="color:var(--primary);margin-right:8px;"></i>投稿页关闭提示</label>
+                                <textarea id="submitClosedMessage" placeholder="输入投稿页关闭时显示的提示消息（支持 HTML 格式）" style="width:100%;min-height:100px;padding:12px;border:2px solid rgba(74,108,247,0.1);border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;"></textarea>
+                                <div style="margin-top:8px;font-size:12px;color:var(--text-light);">
+                                    <i class="fas fa-info-circle"></i> 可使用 Font Awesome 图标，如：<code>&lt;i class="fas fa-clock"&gt;&lt;/i&gt;</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background:rgba(255,239,239,0.6);border:1px solid rgba(255,107,107,0.3);border-radius:12px;padding:15px;margin-top:20px;">
+                            <h5 style="margin:0 0 10px 0;color:var(--accent);font-size:14px;"><i class="fas fa-lightbulb"></i> 提示消息示例代码</h5>
+                            <pre style="margin:0;padding:10px;background:rgba(255,255,255,0.8);border-radius:6px;font-size:12px;overflow-x:auto;color:var(--text);">&lt;div style='text-align:center'&gt;
+  &lt;i class='fas fa-clock' style='font-size:80px;color:#004d99;margin-bottom:20px;animation:pulse 2s infinite;'&gt;&lt;/i&gt;
+  &lt;p style='font-size:20px;color:#004d99;font-weight:bold;'&gt;暂未开启投票，请耐心等待&lt;/p&gt;
+&lt;/div&gt;</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 投稿管理模块 -->
+            <div id="submit-all" class="panel active">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-list"></i> 全部投稿</h3>
+                    </div>
+                    <ul class="data-list" id="list-all">加载中...</ul>
+                </div>
+            </div>
+
+            <!-- 反馈管理模块 -->
+            <div id="feedback-list" class="panel">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="feedbackTotal">0</div>
+                        <div class="stat-label">总反馈数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="feedbackUnread">0</div>
+                        <div class="stat-label">未读反馈</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="feedbackToday">0</div>
+                        <div class="stat-label">今日反馈</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-comments"></i> 用户反馈列表</h3>
+                        <button class="btn btn-primary" onclick="loadFeedbackData()"><i class="fas fa-sync"></i> 刷新</button>
+                    </div>
+                    <div id="feedback-container">加载中...</div>
+                </div>
+            </div>
+
+            <!-- Q&A 管理模块 -->
+            <div id="submit-qa" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-question-circle"></i> Q&A 管理</h3>
+                    </div>
+                    <div style="background:rgba(255, 255, 255, 0.5);padding:25px;border-radius:15px;margin-bottom:25px;backdrop-filter:blur(10px);border:1px solid rgba(74, 108, 247, 0.1);">
+                        <h4 style="margin-bottom:15px;color:var(--primary);font-weight:700;"><i class="fas fa-plus-circle"></i> 添加新问题</h4>
+                        <input type="text" id="qa-question" class="search-input-box" placeholder="输入问题..." style="width:100%;padding:14px;border:2px solid rgba(74, 108, 247, 0.1);border-radius:12px;margin:12px 0;box-sizing:border-box;font-size:14px;transition:all 0.3s;">
+                        <textarea id="qa-answer" placeholder="输入回答..." style="width:100%;padding:14px;border:2px solid rgba(74, 108, 247, 0.1);border-radius:12px;min-height:120px;box-sizing:border-box;font-size:14px;resize:vertical;transition:all 0.3s;"></textarea>
+                        <button class="btn btn-primary" onclick="addQA()" style="margin-top:15px;"><i class="fas fa-save"></i> 保存</button>
+                    </div>
+                    <div id="qa-admin-list">加载中...</div>
+                </div>
+            </div>
+
+            <!-- 投票管理模块 -->
+            <div id="vote-music" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-music"></i> 音乐管理</h3>
+                        <button class="btn btn-success" onclick="showAddMusicForm()"><i class="fas fa-plus"></i> 添加音乐</button>
+                    </div>
+                    <div id="music-upload-form" style="display:none;background:#f8f9fa;padding:20px;border-radius:8px;margin-bottom:20px;">
+                        <h4>添加新音乐</h4>
+                        <select id="musicSource" onchange="toggleMusicUploadFields()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:10px 0;">
+                            <option value="local">本地上传</option>
+                            <option value="netease">网易云音乐</option>
+                        </select>
+                        <div id="local-fields">
+                            <input type="text" id="musicTitle" placeholder="歌曲标题 (格式：歌手 - 歌曲名)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:10px 0;">
+                            <input type="file" id="musicFile" accept=".mp3,.wav,.ogg,.m4a" style="margin:10px 0;">
+                            <button class="btn btn-success" onclick="uploadLocalMusic()"><i class="fas fa-upload"></i> 上传</button>
+                        </div>
+                        <div id="netease-fields" style="display:none;">
+                            <input type="url" id="neteaseLink" placeholder="网易云音乐链接" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:10px 0;">
+                            <button class="btn btn-primary" onclick="addOnlineMusic('netease')"><i class="fas fa-plus"></i> 添加</button>
+                        </div>
+
+                        <button class="btn btn-danger" onclick="hideAddMusicForm()" style="margin-left:10px;"><i class="fas fa-times"></i> 取消</button>
+                    </div>
+                    <div id="music-list-container">加载中...</div>
+                </div>
+            </div>
+
+            <div id="vote-stats" class="panel">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalVotes">0</div>
+                        <div class="stat-label">总投票数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="uniqueVoters">0</div>
+                        <div class="stat-label">参与人数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todayVotes">0</div>
+                        <div class="stat-label">今日投票</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="topSongVotes">0</div>
+                        <div class="stat-label">最高票数</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-trophy"></i> 歌曲投票排行榜</h3>
+                    </div>
+                    <table class="data-table" id="songRankingTable" style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:var(--primary);color:white;">
+                                <th style="padding:12px;">排名</th>
+                                <th style="padding:12px;">歌曲名称</th>
+                                <th style="padding:12px;">投票数</th>
+                                <th style="padding:12px;">占比</th>
+                            </tr>
+                        </thead>
+                        <tbody id="songRankingBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="vote-records" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-clipboard-list"></i> 投票记录</h3>
+                        <button class="btn btn-primary" onclick="loadVoteRecords()"><i class="fas fa-sync"></i> 刷新</button>
+                    </div>
+                    <table class="data-table" id="voteRecordsTable" style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:var(--primary);color:white;">
+                                <th style="padding:12px;">时间</th>
+                                <th style="padding:12px;">IP 地址</th>
+                                <th style="padding:12px;">歌曲 ID</th>
+                                <th style="padding:12px;">歌曲名称</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voteRecordsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 歌曲下载管理面板 -->
+            <div id="vote-download" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-cloud-download-alt"></i> 歌曲下载管理</h3>
+                        <div style="display:flex;gap:10px;">
+                            <button class="btn btn-success" onclick="downloadAllSongs()"><i class="fas fa-download"></i> 一键下载全部</button>
+                            <button class="btn btn-primary" onclick="downloadSelectedSongs()"><i class="fas fa-download"></i> 下载已选</button>
+                        </div>
+                    </div>
+                                
+                    <div style="background:rgba(0,77,153,0.05);border-left:4px solid var(--primary);padding:15px;border-radius:8px;margin-bottom:20px;">
+                        <p style="margin:0;color:#666;font-size:14px;">
+                            <i class="fas fa-info-circle"></i> 提示：此功能会根据你的网络速度下载。每下载一首歌曲会间隔 500ms。
+                        </p>
+                    </div>
+                                
+                    <div id="download-music-list-container" style="max-height:600px;overflow-y:auto;">加载中...</div>
+                </div>
+            </div>
+
+            <div id="vote-reset" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-hdd"></i> 本地音频文件管理</h3>
+                    </div>
+                    <div style="background:rgba(255, 239, 239, 0.6);border:1px solid rgba(255, 107, 107, 0.3);border-radius:15px;padding:25px;backdrop-filter:blur(10px);">
+                        <h4 style="color:var(--accent);margin-bottom:20px;font-weight:700;font-size:18px;"><i class="fas fa-trash-alt"></i> 音频文件管理</h4>
+                        <p style="color:#c0392b;margin-bottom:20px;font-size:14px;line-height:1.6;"><i class="fas fa-info-circle"></i> 删除本地上传的音频文件，此操作不可恢复，请谨慎操作</p>
+                        
+                        <div id="audioFilesList" style="margin-bottom:20px;max-height:400px;overflow-y:auto;color: var(--text) !important;">
+                            <div style="text-align:center;padding:30px;color:var(--text-light);">
+                                <i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;"></i>
+                                <div>正在加载音频文件列表...</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-danger" onclick="deleteSelectedAudioFiles()" style="padding:14px 28px;font-size:15px;width:100%;margin-top:15px;"><i class="fas fa-trash"></i> 删除选中的音频文件</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 更新日志面板 -->
+            <div id="settings-changelog" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-history"></i> 更新日志管理</h3>
+                        <button class="btn btn-primary" onclick="showAddChangelogForm()"><i class="fas fa-plus"></i> 添加更新日志</button>
+                    </div>
+                    <div id="changelog-admin-list">加载中...</div>
+                </div>
+            </div>
+
+            <!-- 更新日志添加/编辑弹窗 -->
+            <div id="changelog-form-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;">
+                <div style="background:white;padding:30px;border-radius:15px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;">
+                    <h3 style="margin-bottom:20px;color:var(--primary);"><i class="fas fa-edit"></i> 添加更新日志</h3>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-weight:600;">版本号</label>
+                        <input type="text" id="changelog-version" placeholder="如：v2.1.0" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-weight:600;">日期</label>
+                        <input type="date" id="changelog-date" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-weight:600;">标题</label>
+                        <input type="text" id="changelog-title" placeholder="更新标题" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-weight:600;">类型</label>
+                        <select id="changelog-type" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                            <option value="update">功能更新</option>
+                            <option value="fix">问题修复</option>
+                            <option value="optimize">优化改进</option>
+                            <option value="security">安全更新</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-weight:600;">内容（每行一条，用回车分隔）</label>
+                        <textarea id="changelog-content" placeholder="✨ 新增功能1&#10;🔧 优化功能2" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;min-height:120px;resize:vertical;"></textarea>
+                    </div>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;">
+                        <button class="btn btn-secondary" onclick="hideAddChangelogForm()" style="background:#95a5a6;">取消</button>
+                        <button class="btn btn-primary" onclick="saveChangelog()"><i class="fas fa-save"></i> 保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统设置模块 -->
+            <!-- 公告管理模块 -->
+            <div id="settings-announcement" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-bullhorn"></i> 投票页公告编辑</h3>
+                        <button class="btn btn-primary" onclick="saveVoteAnnouncement()"><i class="fas fa-save"></i> 保存</button>
+                    </div>
+                    
+                    <!-- 富文本编辑器容器 -->
+                    <div class="rich-editor-wrapper" style="margin-top: 10px;">
+                        <!-- 工具栏 -->
+                        <div class="rich-editor-toolbar" id="richEditorToolbar">
+                            <button type="button" class="btn btn-sm" data-cmd="bold" title="加粗"><i class="fas fa-bold"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="italic" title="斜体"><i class="fas fa-italic"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="underline" title="下划线"><i class="fas fa-underline"></i></button>
+                            <div class="toolbar-color-group">
+                                <i class="fas fa-palette" style="color: #4a6cf7;"></i>
+                                <input type="color" id="foreColorPicker" value="#000000">
+                            </div>
+                            <button type="button" class="btn btn-sm" data-cmd="removeFormat" title="清除格式"><i class="fas fa-eraser"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="insertUnorderedList" title="无序列表"><i class="fas fa-list-ul"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="insertOrderedList" title="有序列表"><i class="fas fa-list-ol"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="createLink" title="插入链接"><i class="fas fa-link"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="undo" title="撤销"><i class="fas fa-undo"></i></button>
+                            <button type="button" class="btn btn-sm" data-cmd="redo" title="重做"><i class="fas fa-redo"></i></button>
+                        </div>
+                        <!-- 可编辑区域 -->
+                        <div id="voteAnnouncementEditorRich" class="rich-editor-content" contenteditable="true"></div>
+                        <div class="rich-editor-note" style="font-size: 12px; color: #64748b; margin-top: 8px; text-align: right;">
+                            <i class="fas fa-info-circle"></i> 选中文字后使用上方按钮调整样式
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 备份管理面板 -->
+            <div id="settings-backup" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-database"></i> 备份管理</h3>
+                        <button class="btn btn-primary" onclick="loadBackupList()"><i class="fas fa-sync"></i> 刷新</button>
+                    </div>
+                    
+                    <div style="background:linear-gradient(135deg, rgba(74, 108, 247, 0.05), rgba(0, 188, 212, 0.05));border:1px solid rgba(74, 108, 247, 0.1);border-radius:15px;padding:25px;margin-bottom:20px;backdrop-filter:blur(10px);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                            <div>
+                                <p style="margin:0 0 5px 0;font-size:15px;color:var(--text);font-weight:600;"><i class="fas fa-info-circle" style="color:var(--primary);margin-right:8px;"></i>当前备份文件状态</p>
+                                <p style="margin:0;font-size:13px;color:var(--text-light);">共发现 <span id="backupCount" style="color:var(--primary);font-weight:700;">无文件</span> 个备份文件</p>
+                            </div>
+                        </div>
+                        <div id="backupFilesList" style="max-height:250px;overflow-y:auto;background:rgba(255,255,255,0.8);border-radius:8px;padding:15px;margin-bottom:15px;">
+                            <div style="text-align:center;padding:20px;color:var(--text-light);">
+                                <i class="fas fa-spinner fa-spin" style="margin-bottom:10px;"></i>
+                                <div>正在加载备份文件列表...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;">
+                            <div style="background:rgba(255, 107, 107, 0.1);border:1px solid rgba(255, 107, 107, 0.3);border-radius:12px;padding:20px;">
+                                <h5 style="margin:0 0 10px 0;color:var(--accent);font-size:15px;"><i class="fas fa-trash-alt"></i> 删除所有备份文件</h5>
+                                <p style="margin:0 0 15px 0;font-size:13px;color:var(--text-light);">清理 vote 文件夹中的所有 .backup.* 文件</p>
+                                <button class="btn btn-danger" onclick="deleteAllBackups()" style="width:100%;"><i class="fas fa-trash"></i> 删除所有备份</button>
+                            </div>
+                            <div style="background:rgba(16, 185, 129, 0.1);border:1px solid rgba(16, 185, 129, 0.3);border-radius:12px;padding:20px;">
+                                <h5 style="margin:0 0 10px 0;color:var(--success);font-size:15px;"><i class="fas fa-undo"></i> 一键还原数据</h5>
+                                <p style="margin:0 0 15px 0;font-size:13px;color:var(--text-light);">从最新备份还原 music_data.json 和 vote_records.txt</p>
+                                <button class="btn btn-success" onclick="showRestoreConfirm()" style="width:100%;"><i class="fas fa-undo"></i> 一键还原</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-system" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-cog"></i> 系统设置</h3>
+                    </div>
+                    <div style="margin-bottom:30px;">
+                        <h4 style="margin-bottom:15px;">AI 智能审核模式</h4>
+                        <div style="display:flex;align-items:center;gap:15px;background:#f8f9fa;padding:15px;border-radius:8px;border-left:4px solid var(--primary);">
+                            <input type="checkbox" id="aiModeToggle" onchange="toggleAiMode(this.checked)" style="transform:scale(1.3);">
+                            <label for="aiModeToggle" style="margin:0;cursor:pointer;">
+                                <strong>开启 AI 详细原因记录功能</strong>
+                                <div style="font-size:13px;color:#666;margin-top:5px;">开启后，AI 如果判定不合格，将返回原因并存入记录</div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 style="margin-bottom:15px;color:var(--danger);">系统重置</h4>
+                        <div style="background:rgba(255, 243, 207, 0.6);border:1px solid rgba(255, 234, 167, 0.8);border-radius:15px;padding:25px;margin-bottom:20px;backdrop-filter:blur(10px);">
+                            <p style="color:#856404;margin-bottom:20px;font-weight:600;"><i class="fas fa-exclamation-triangle"></i> 危险操作区域 - 系统重置</p>
+                            <div style="margin:20px 0;">
+                                <label style="display:flex;align-items:center;margin-bottom:15px;padding:15px;background:rgba(255, 255, 255, 0.9);border:2px solid rgba(74, 108, 247, 0.1);border-radius:12px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(74, 108, 247, 0.05)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.9)'">
+                                    <input type="checkbox" id="resetMusic" value="music" style="margin-right:15px;transform:scale(1.3);">
+                                    <div>
+                                        <strong style="font-size:15px;color:var(--text);">重置音乐数据</strong>
+                                        <div style="font-size:13px;color:var(--text-light);margin-top:5px;">清空音乐列表，保留音频文件备份</div>
+                                    </div>
+                                </label>
+                                <label style="display:flex;align-items:center;margin-bottom:15px;padding:15px;background:rgba(255, 255, 255, 0.9);border:2px solid rgba(74, 108, 247, 0.1);border-radius:12px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(74, 108, 247, 0.05)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.9)'">
+                                    <input type="checkbox" id="resetVotes" value="votes" style="margin-right:15px;transform:scale(1.3);">
+                                    <div>
+                                        <strong style="font-size:15px;color:var(--text);">重置投票记录</strong>
+                                        <div style="font-size:13px;color:var(--text-light);margin-top:5px;">清空所有投票记录，备份原始数据</div>
+                                    </div>
+                                </label>
+                                <label style="display:flex;align-items:center;margin-bottom:15px;padding:15px;background:rgba(255, 255, 255, 0.9);border:2px solid rgba(74, 108, 247, 0.1);border-radius:12px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(74, 108, 247, 0.05)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.9)'">
+                                    <input type="checkbox" id="resetSubmit" value="submit" style="margin-right:15px;transform:scale(1.3);">
+                                    <div>
+                                        <strong style="font-size:15px;color:var(--text);">重置投稿数据</strong>
+                                        <div style="font-size:13px;color:var(--text-light);margin-top:5px;">清空所有投稿记录和反馈</div>
+                                    </div>
+                                </label>
+                                <label style="display:flex;align-items:center;margin-bottom:15px;padding:15px;background:rgba(255, 255, 255, 0.9);border:2px solid rgba(74, 108, 247, 0.1);border-radius:12px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(74, 108, 247, 0.05)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.9)'">
+                                    <input type="checkbox" id="resetAudio" value="audio" style="margin-right:15px;transform:scale(1.3);">
+                                    <div>
+                                        <strong style="font-size:15px;color:var(--text);">清理音频文件</strong>
+                                        <div style="font-size:13px;color:var(--text-light);margin-top:5px;">备份并清理本地音频文件</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <button class="btn btn-danger" onclick="showResetConfirm()" style="padding:14px 28px;font-size:15px;"><i class="fas fa-redo"></i> 执行系统重置</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom:15px;color:var(--primary);">音频文件管理</h4>
+                        <button class="btn btn-primary" onclick="loadAudioFilesList()" style="margin-bottom:15px;"><i class="fas fa-sync"></i> 刷新列表</button>
+                        <button class="btn btn-danger" onclick="deleteSelectedAudioFiles()" style="margin-left:10px;"><i class="fas fa-trash"></i> 删除选中</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+    <script>
+        // 移动端检测
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+        
+        // 页面加载时检查
+        document.addEventListener('DOMContentLoaded', function() {
+            checkNavbarDisplay();
+            window.addEventListener('resize', checkNavbarDisplay);
+        });
+        
+        // 检查并设置导航栏显示
+        function checkNavbarDisplay() {
+            const mobileNavbar = document.getElementById('mobileNavbar');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (isMobile()) {
+                if (mobileNavbar) mobileNavbar.style.display = 'flex';
+                if (sidebar) sidebar.style.display = 'none';
+            } else {
+                if (mobileNavbar) mobileNavbar.style.display = 'none';
+                if (sidebar) sidebar.style.display = 'block';
+            }
+        }
+        
+        // 更新移动端导航激活状态
+        function updateMobileNavActive(element) {
+            const items = document.querySelectorAll('.mobile-nav-item');
+            items.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+        
+        // 监听模块切换，同步更新导航状态
+        const originalSwitchModule = window.switchModule;
+        window.switchModule = function(moduleId) {
+            if (originalSwitchModule) {
+                originalSwitchModule(moduleId);
+            }
+            
+            // 更新移动端导航激活状态
+            if (isMobile()) {
+                const navItems = document.querySelectorAll('.mobile-nav-item');
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('onclick').includes(moduleId)) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            
+            // 更新 PC 端导航激活状态
+            const pcItems = document.querySelectorAll('.nav-item');
+            pcItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick').includes(moduleId)) {
+                    item.classList.add('active');
+                }
+            });
+        };
+    </script>
+</body>
+</html>

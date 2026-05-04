@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>起床铃投稿系统</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <!-- 引入 Font Awesome 和 字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004d99;
+            --primary-light: #0066cc;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light-bg: #f0f8ff;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #666;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'ZCOOL KuaiLe', 'Nunito', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #e6f2ff, #f0f8ff);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 120px; /* 为底部导航栏留空间 */
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(0, 77, 153, 0.05) 0%, transparent 15%),
+                radial-gradient(circle at 90% 80%, rgba(52, 152, 219, 0.05) 0%, transparent 15%);
+            z-index: -1;
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: var(--glass-shadow);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 2rem;
+            text-shadow: 1px 1px 3px rgba(255,255,255,0.8);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        
+        h3 {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.6);
+            font-family: inherit;
+            font-size: 16px;
+            outline: none;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            background: rgba(255,255,255,0.95);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .search-box button {
+            padding: 14px 25px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            white-space: nowrap;
+        }
+
+        .search-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+            .search-box input, .search-box button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .music-card-content {
+                padding: 15px;
+                gap: 12px;
+            }
+            
+            .music-cover {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .music-actions {
+                padding: 0 15px 15px 15px;
+                gap: 8px;
+            }
+            
+            .submit-btn, .preview-btn {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .result-container {
+                height: 300px;
+            }
+        }
+
+        .result-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .no-song-found-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .no-song-found-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        /* 音乐源选择标签样式 */
+        .music-source-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .source-tab {
+            padding: 10px 20px;
+            border: 2px solid rgba(0, 77, 153, 0.2);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-light);
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .source-tab:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .source-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 77, 153, 0.3);
+        }
+
+        .source-tab i {
+            font-size: 16px;
+        }
+
+        .music-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            gap: 0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .music-item:hover {
+            background: rgba(255,255,255,1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .music-item:last-child {
+            border-bottom: none;
+        }
+
+        .music-card-content {
+            display: flex;
+            padding: 20px;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .music-cover {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background-color: #f5f5f5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .music-info {
+            flex: 1;
+            overflow: hidden;
+            min-width: 0;
+        }
+        
+        .music-actions {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .music-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0 0 5px 0;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-artist {
+            font-size: 13px;
+            color: var(--text-light);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .preview-btn {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+        }
+
+        .preview-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .preview-btn.loading::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .music-controls {
+            display: none !important;
+        }
+
+        /* === 底部播放条 === */
+        .music-player-bar {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            padding: 12px 16px;
+            min-width: 350px;
+            max-width: 600px;
+            z-index: 998;
+            transition: all 0.3s ease;
+            width: calc(100% - 40px);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(20px);
+        }
+
+        .music-player-bar.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .player-album-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: rotate 20s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .player-album-cover.playing {
+            animation-play-state: running;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .player-album-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+            position: relative;
+            height: 48px;
+        }
+
+        .player-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-artist {
+            font-size: 12px;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-lyric-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .player-lyric-display.active {
+            display: flex;
+        }
+
+        .player-lyric-text {
+            font-size: 16px;
+            color: var(--primary);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            animation: lyricFadeIn 0.3s ease;
+            line-height: 1.4;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        @keyframes lyricFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .player-info.show-lyric .player-title,
+        .player-info.show-lyric .player-artist {
+            display: none;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 77, 153, 0.3);
+        }
+
+        .player-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 77, 153, 0.4);
+        }
+
+        .player-btn:active {
+            transform: scale(0.95);
+        }
+
+        .player-btn i {
+            font-size: 16px;
+        }
+
+        /* === 全屏歌词播放器 (Apple Music 风格) === */
+        .full-screen-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .full-screen-player.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .fsp-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+
+        .fsp-back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            transition: transform 0.2s ease;
+            z-index: 10;
+        }
+
+        .fsp-back-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .fsp-song-info {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            max-width: 60%;
+            overflow: hidden;
+        }
+
+        .fsp-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fsp-artist {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fsp-spacer {
+            width: 40px;
+        }
+
+        .fsp-lyrics-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+        }
+
+        .fsp-lyrics-scroll {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 50% 20px;
+            box-sizing: border-box;
+        }
+
+        .fsp-lyrics-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .fsp-lyrics-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .fsp-lyric-line {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .fsp-lyric-line.active {
+            font-size: 28px;
+            color: #ffffff;
+            font-weight: 700;
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .fsp-controls {
+            padding: 20px 30px 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .fsp-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .fsp-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            min-width: 40px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .fsp-progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .fsp-progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .fsp-play-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            color: #1a1a1a;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .fsp-play-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .fsp-play-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            .music-player-bar {
+                bottom: 100px;
+                min-width: calc(100% - 30px);
+                max-width: calc(100% - 30px);
+                width: calc(100% - 30px);
+                padding: 10px 12px;
+            }
+
+            .player-album-cover {
+                width: 40px;
+                height: 40px;
+            }
+
+            .player-title {
+                font-size: 13px;
+            }
+
+            .player-artist {
+                font-size: 11px;
+            }
+
+            .player-info {
+                height: 40px;
+            }
+
+            .player-lyric-text {
+                font-size: 14px;
+            }
+
+            .player-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .player-btn i {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .music-player-bar {
+                bottom: 85px;
+                min-width: calc(100% - 20px);
+                max-width: calc(100% - 20px);
+                width: calc(100% - 20px);
+                padding: 8px 10px;
+                gap: 8px;
+            }
+
+            .player-album-cover {
+                width: 36px;
+                height: 36px;
+            }
+
+            .player-title {
+                font-size: 12px;
+            }
+
+            .player-artist {
+                font-size: 10px;
+            }
+
+            .player-info {
+                height: 36px;
+            }
+
+            .player-lyric-text {
+                font-size: 13px;
+            }
+
+            .player-btn {
+                width: 28px;
+                height: 28px;
+            }
+
+            .player-btn i {
+                font-size: 12px;
+            }
+        }
+
+        .feedback-box {
+            margin-top: 25px;
+            border-top: 2px dashed rgba(0,0,0,0.1);
+            padding-top: 20px;
+        }
+
+        .feedback-box h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feedback-box textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.6);
+            font-family: inherit;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 100px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .feedback-box textarea:focus {
+            background: rgba(255,255,255,0.95);
+            border-color: var(--primary);
+        }
+
+        .feedback-box button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), #c0392b);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .feedback-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            transition: transform 0.5s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            font-size: 16px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-modal-content {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-text {
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .success-countdown-text {
+            font-size: 14px;
+            color: var(--text-light);
+            background: rgba(245, 246, 250, 0.8);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+        }
+
+        /* === 底部玻璃拟态导航栏 === */
+        .glass-navbar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 居中对齐 */
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            min-width: 400px;
+            max-width: 600px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            width: fit-content; /* 根据内容自适应宽度 */
+        }
+
+        .navbar-slider {
+            position: absolute;
+            bottom: 8px;
+            height: 4px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            color: var(--text-light);
+            text-decoration: none;
+            flex: 0 0 auto; /* 不伸缩，根据内容自适应 */
+            max-width: 120px;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .nav-item span {
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            color: var(--primary-light);
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .nav-item.active {
+            color: #1976d2;
+        }
+
+        .nav-item.active i {
+            transform: scale(1.15) translateY(-3px);
+        }
+
+        .nav-item:active i {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            .glass-navbar {
+                min-width: calc(100% - 40px);
+                max-width: calc(100% - 40px);
+                left: 50%; /* 保持居中定位 */
+                transform: translateX(-50%); /* 确保水平居中 */
+                padding: 10px 15px;
+                bottom: 20px;
+                gap: 5px;
+                width: calc(100% - 40px); /* 固定宽度计算 */
+            }
+
+            .nav-item {
+                padding: 8px 12px;
+                max-width: 100px;
+                flex: 0 0 auto; /* 不伸缩 */
+            }
+
+            .nav-item i {
+                font-size: 18px;
+            }
+
+            .nav-item span {
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .result-container {
+                height: 300px;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .music-card-content {
+                padding: 12px;
+                gap: 10px;
+            }
+            
+            .music-cover {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .music-title {
+                font-size: 14px;
+            }
+            
+            .music-artist {
+                font-size: 12px;
+            }
+            
+            .music-actions {
+                padding: 0 12px 12px 12px;
+                gap: 8px;
+            }
+            
+            .preview-btn, .submit-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-navbar {
+                min-width: calc(100% - 30px);
+                max-width: calc(100% - 30px);
+                left: 50%; /* 保持居中定位 */
+                transform: translateX(-50%); /* 确保水平居中 */
+                padding: 8px 12px;
+                bottom: 15px;
+                gap: 3px;
+                width: calc(100% - 30px); /* 固定宽度计算 */
+            }
+
+            .nav-item {
+                padding: 6px 8px;
+                max-width: 90px;
+                flex: 0 0 auto; /* 不伸缩 */
+            }
+
+            .nav-item i {
+                font-size: 16px;
+            }
+
+            .nav-item span {
+                font-size: 11px;
+            }
+        }
+        
+        /* 功能关闭覆盖层样式 */
+        .feature-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* 全屏覆盖 */
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999; /* 低于导航栏 */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .feature-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .feature-overlay-content {
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .feature-overlay-content .icon {
+            font-size: 80px;
+            color: #004d99;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        .feature-overlay-content p {
+            font-size: 20px;
+            color: #004d99;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .feature-overlay-content .icon {
+                font-size: 60px;
+            }
+            
+            .feature-overlay-content p {
+                font-size: 16px;
+            }
+        }
+        
+        /* 开发者测试按钮样式 */
+        .dev-test-btn {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: rgba(0, 77, 153, 0.1);
+            border: 1px dashed rgba(0, 77, 153, 0.3);
+            border-radius: 8px;
+            color: rgba(0, 77, 153, 0.6);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-test-btn:hover {
+            background: rgba(0, 77, 153, 0.15);
+            border-color: rgba(0, 77, 153, 0.5);
+            color: rgba(0, 77, 153, 0.8);
+        }
+        
+        /* 开发者测试弹窗样式 */
+        .dev-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .dev-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dev-modal-content h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .dev-modal-content p {
+            margin: 0 0 20px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .dev-modal-content input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .dev-modal-content input:focus {
+            outline: none;
+            border-color: #004d99;
+        }
+        
+        .dev-modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .dev-btn-cancel, .dev-btn-confirm {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-btn-cancel {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+        
+        .dev-btn-cancel:hover {
+            background: #eee;
+        }
+        
+        .dev-btn-confirm {
+            background: #004d99;
+            border: none;
+            color: white;
+        }
+        
+        .dev-btn-confirm:hover {
+            background: #003366;
+        }
+        
+        .dev-error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .dev-error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="submit-modal" class="modal-overlay hidden">
+        <div class="modal-content success-modal-content">
+            <i id="modal-icon" class="fas fa-spinner fa-spin success-icon" style="color: #3498db;"></i>
+            <h2 id="modal-title" style="color: #3498db; margin-bottom: 15px;">正在提交请求...</h2>
+            <div id="modal-text" class="success-text">正在连接服务器</div>
+            <div id="modal-countdown-div" class="success-countdown-text hidden">
+                将在 <span id="success-countdown" style="color: var(--accent); font-weight: bold; font-size: 18px;">5</span> 秒后回到初始页面...
+            </div>
+            <br>
+            <button id="modal-action-btn" class="modal-btn hidden">立即跳转</button>
+        </div>
+    </div>
+    
+    <!-- 找不到歌曲反馈模态框 -->
+    <div id="feedback-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%;">
+            <h2 style="color: var(--primary); margin-bottom: 15px; font-size: 1.3rem;"><i class="fas fa-exclamation-circle"></i> 提交反馈</h2>
+            <p style="color: var(--text-light); margin-bottom: 20px; line-height: 1.6;">不好意思，我们没有找到您想要的歌曲。请描述一下您想投稿的歌曲信息。</p>
+            <textarea id="feedback-input" placeholder="请输入：歌手 - 歌曲名（例如：周杰伦 - 东风破）" style="width: 100%; padding: 12px; border: 2px solid rgba(0,77,153,0.2); border-radius: 12px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px; box-sizing: border-box; outline: none; transition: all 0.3s;"></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
+                <button onclick="closeFeedbackModal()" style="padding: 10px 20px; background: #e0e0e0; color: #333; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.3s;" onmouseover="this.style.background='#d0d0d0'" onmouseout="this.style.background='#e0e0e0'">取消</button>
+                <button onclick="confirmFeedback()" style="padding: 10px 20px; background: linear-gradient(135deg, var(--success), #27ae60); color: white; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.3s; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);" onmouseover="this.style.boxShadow='0 6px 20px rgba(46, 204, 113, 0.4)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(46, 204, 113, 0.3)'">提交反馈</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 音乐播放器容器 -->
+    <div id="music-controls" class="music-controls">
+        <audio id="preview-audio" controls preload="metadata"></audio>
+        <button class="close-btn" onclick="closePreview()"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <!-- 底部播放条 -->
+    <div class="music-player-bar" id="musicPlayerBar">
+        <div class="player-album-cover" id="playerAlbumCover">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ddd'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='%23999'%3E♪%3C/text%3E%3C/svg%3E" alt="专辑封面" id="playerCoverImg">
+        </div>
+        <div class="player-info" id="playerInfo">
+            <div class="player-title" id="playerTitle">未播放</div>
+            <div class="player-artist" id="playerArtist">-</div>
+            <div class="player-lyric-display" id="playerLyricDisplay">
+                <div class="player-lyric-text" id="playerLyricText"></div>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="player-btn" id="playerPlayBtn">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 全屏歌词播放器 -->
+    <div class="full-screen-player" id="fullScreenPlayer">
+        <div class="fsp-header">
+            <button class="fsp-back-btn" id="fspBackBtn">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="fsp-song-info">
+                <div class="fsp-title" id="fspTitle">歌曲标题</div>
+                <div class="fsp-artist" id="fspArtist">歌手信息</div>
+            </div>
+            <div class="fsp-spacer"></div>
+        </div>
+        
+        <div class="fsp-lyrics-container" id="fspLyricsContainer">
+            <div class="fsp-lyrics-scroll" id="fspLyricsScroll">
+                <div class="fsp-lyrics-content" id="fspLyricsContent">
+                    <!-- 歌词将动态插入这里 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="fsp-controls">
+            <div class="fsp-progress-container">
+                <span class="fsp-time" id="fspCurrentTime">0:00</span>
+                <div class="fsp-progress-bar" id="fspProgressBar">
+                    <div class="fsp-progress-fill" id="fspProgressFill"></div>
+                </div>
+                <span class="fsp-time" id="fspTotalTime">0:00</span>
+            </div>
+            <button class="fsp-play-btn" id="fspPlayBtn">
+                <i class="fas fa-pause"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>🎵 起床铃投稿</h1>
+        <h2>试听加载速度依据网速而定</h2>
+        <h3>一般需要10s左右</h3>
+
+       <!-- <h3 style="color: red;">请注意 由于AI服务商原因 本次投稿AI审查出现问题 请不必担心 我们会对每一首歌进行人工审查</h3> -->
+
+
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="输入歌名/歌手搜索..." onkeypress="handleEnter(event)">
+            <button onclick="searchMusic()"><i class="fas fa-search"></i> 搜索</button>
+        </div>
+        
+
+        
+        <div class="result-container" id="result-list">
+            <div style="text-align: center; padding: 20px; color: #999;">请搜索你要投稿的音乐</div>
+        </div>
+        <button class="no-song-found-btn" onclick="openNoSongFoundFeedback()"><i class="fas fa-exclamation-circle"></i> 找不到想要的歌曲？提交反馈</button>
+    </div>
+    
+    <!-- 底部玻璃拟态导航栏 -->
+    <nav class="glass-navbar">
+        <div class="navbar-slider" id="navbarSlider"></div>
+        <a href="../vote/vote.html" class="nav-item" data-page="vote">
+            <i class="ri-music-2-fill"></i>
+            <span>歌曲投票</span>
+        </a>
+        <a href="index.html" class="nav-item active" data-page="submit">
+            <i class="ri-upload-cloud-2-line"></i>
+            <span>歌曲投稿</span>
+        </a>
+        <a href="../vote/navigate.html" class="nav-item" data-page="profile">
+            <i class="ri-user-smile-line"></i>
+            <span>个人中心</span>
+        </a>
+        <a href="../suggestion/index.html" class="nav-item" data-page="feedback">
+            <i class="ri-feedback-line"></i>
+            <span>问题反馈</span>
+        </a>
+    </nav>
+
+    <!-- 功能关闭覆盖层 -->
+    <div class="feature-overlay" id="submitOverlay">
+        <div class="feature-overlay-content" id="submitOverlayContent">
+            <i class="fas fa-clock icon"></i>
+            <p>暂未开启投稿，请耐心等待</p>
+            <button class="dev-test-btn" onclick="showDevTestInput('submit')">
+                <i class="fas fa-code"></i> 开发者测试入口
+            </button>
+        </div>
+    </div>
+    
+    <!-- 开发者测试密码输入弹窗 -->
+    <div class="dev-modal" id="devModal">
+        <div class="dev-modal-content">
+            <h3><i class="fas fa-lock"></i> 开发者测试</h3>
+            <p>请输入开发者测试密码：</p>
+            <input type="password" id="devPassword" placeholder="输入密码...">
+            <p class="dev-error" id="devError"></p>
+            <div class="dev-modal-buttons">
+                <button class="dev-btn-cancel" onclick="closeDevModal()">取消</button>
+                <button class="dev-btn-confirm" onclick="verifyDevPassword()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量存储搜索结果
+        let searchResults = {
+            netease: []
+        };
+
+        function handleEnter(e) { if (e.key === 'Enter') searchMusic(); }
+
+        async function searchMusic() {
+            const keyword = document.getElementById('search-input').value.trim();
+            const resultList = document.getElementById('result-list');
+            
+            if (!keyword) return alert('请输入搜索关键词');
+            
+            resultList.innerHTML = '<div style="text-align: center; padding: 20px;">正在搜索网易云音乐...</div>';
+            
+            try {
+                console.log('[Search] 开始搜索:', keyword);
+                
+                const res = await fetch(`api.php?action=search_music&keyword=${encodeURIComponent(keyword)}&source=netease`);
+                console.log('[Search] 响应状态:', res.status);
+                
+                const data = await res.json();
+                console.log('[Search] 数据:', data);
+                
+                // 处理网易云音乐结果
+                searchResults.netease = data.result ? (data.result.songs || data.result) : [];
+                console.log('[Search] 歌曲数量:', searchResults.netease.length);
+                
+                renderNeteaseResult(searchResults.netease);
+                
+            } catch (error) {
+                console.error('[Search] 搜索出错:', error);
+                resultList.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">网络错误或服务器异常，搜索失败。</div>';
+            }
+        }
+
+        // 渲染网易云音乐结果
+        function renderNeteaseResult(songs) {
+            const resultList = document.getElementById('result-list');
+            resultList.innerHTML = '';
+            songs.forEach(song => {
+                if(!song || !song.id || !song.name) return;
+                const artistName = (song.artists && song.artists[0] && song.artists[0].name) ? song.artists[0].name : '未知歌手';
+                const albumName = song.album ? song.album.name : '未知专辑';
+                const defaultCover = 'https://s4.music.126.net/style/web2/img/default/default_album.jpg'; 
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'music-item';
+                itemDiv.innerHTML = `
+                    <div class="music-card-content">
+                        <img class="music-cover" id="cover-${song.id}" src="${defaultCover}" alt="封面">
+                        <div class="music-info">
+                            <h4 class="music-title" title="${song.name}">${song.name}</h4>
+                            <p class="music-artist" title="${artistName} - ${albumName}">${artistName} - ${albumName}</p>
+                        </div>
+                    </div>
+                    <div class="music-actions">
+                        <button class="preview-btn" id="preview-btn-${song.id}" onclick="previewSong(${song.id}, '${song.name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-play"></i> 试听
+                        </button>
+                        <button class="submit-btn" onclick="submitSong(${song.id}, '${song.name.replace(/'/g, "\\'")}', '${artistName.replace(/'/g, "\\'")}', '${albumName.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-paper-plane"></i> 投稿
+                        </button>
+                    </div>
+                `;
+                resultList.appendChild(itemDiv);
+
+                fetch(`api.php?action=music_detail&id=${song.id}`)
+                    .then(res => res.json())
+                    .then(d => {
+                        if(d.songs && d.songs[0] && d.songs[0].al && d.songs[0].al.picUrl) {
+                            document.getElementById(`cover-${song.id}`).src = d.songs[0].al.picUrl + '?param=50y50';
+                        }
+                    }).catch(e => console.error(e));
+            });
+        }
+
+        function submitSong(id, name, artist, album) {
+            const btns = document.querySelectorAll('.submit-btn');
+            btns.forEach(btn => btn.disabled = true);
+
+            const modal = document.getElementById('submit-modal');
+            const icon = document.getElementById('modal-icon');
+            const title = document.getElementById('modal-title');
+            const text = document.getElementById('modal-text');
+            const countdownDiv = document.getElementById('modal-countdown-div');
+            const countdownSpan = document.getElementById('success-countdown');
+            const actionBtn = document.getElementById('modal-action-btn');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+            
+            icon.className = 'fas fa-spinner fa-spin success-icon';
+            icon.style.color = '#3498db';
+            icon.style.animation = 'spin 1s linear infinite';
+            title.style.color = '#3498db';
+            title.innerText = '正在提交请求...';
+            text.innerHTML = '正在连接服务器，准备提交请求。';
+            countdownDiv.classList.add('hidden');
+            actionBtn.classList.add('hidden');
+
+            setTimeout(() => {
+                if (title.innerText === '正在提交请求...') {
+                    title.innerText = '请求提交中 请稍候...';
+                    text.innerHTML = '我们收到你的投稿啦！正在快马加鞭提交 这可能需要几秒钟，请耐心等待 ☕';
+                }
+            }, 1000);
+
+            const payload = { action: 'submit_song', id, name, artist, album };
+
+            fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(async res => {
+                const responseText = await res.text();
+                try {
+                    return JSON.parse(responseText);
+                } catch(e) {
+                    throw new Error("后端返回了非JSON数据，通常是超时或报错。原数据：" + responseText.substring(0,50));
+                }
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // 根据AI审核结果显示不同的图标和颜色
+                    const isPassed = data.ai_result_text.includes('通过') && !data.ai_result_text.includes('未通过');
+                    
+                    if (isPassed) {
+                        // 无论审核是否通过 都是绿色✅
+                        //原系统 此部分为通过 下面else为不通过
+                        icon.className = 'fas fa-check-circle success-icon';
+                        icon.style.color = '#2ecc71';
+                        icon.style.animation = 'pulse 2s infinite';
+                        title.style.color = '#2ecc71';
+                    } else {
+                        icon.className = 'fas fa-check-circle success-icon';
+                        icon.style.color = '#2ecc71';
+                        icon.style.animation = 'pulse 2s infinite';
+                        title.style.color = '#2ecc71';
+                    }
+                    
+                    title.innerText = '投稿提交完毕！';
+                    text.innerHTML = `<i class="fas fa-robot"></i> 提交成功</b><br><i class="fas fa-user-check"></i> 提交后将由人工复选`;
+
+                    countdownDiv.classList.remove('hidden');
+                    actionBtn.classList.remove('hidden');
+                    actionBtn.innerText = '立即跳转';
+                    actionBtn.onclick = () => window.location.reload();
+
+                    let seconds = 5;
+                    countdownSpan.innerText = seconds;
+                    const countdown = setInterval(() => {
+                        seconds--;
+                        countdownSpan.innerText = seconds;
+                        if (seconds <= 0) {
+                            clearInterval(countdown);
+                            window.location.reload();
+                        }
+                    }, 1000);
+                } else {
+                    showError(data.message || '未知错误', btns);
+                }
+            })
+            .catch(err => {
+                console.error('提交异常详情:', err);
+                showError('处理失败 但后台记录通常已保存成功）请刷新页面。', btns);
+            });
+        }
+
+        function showError(errorMsg, btns) {
+            const modal = document.getElementById('submit-modal');
+            const icon = document.getElementById('modal-icon');
+            const title = document.getElementById('modal-title');
+            const text = document.getElementById('modal-text');
+            const countdownDiv = document.getElementById('modal-countdown-div');
+            const actionBtn = document.getElementById('modal-action-btn');
+
+            icon.className = 'fas fa-times-circle success-icon';
+            icon.style.color = 'var(--accent)';
+            icon.style.animation = 'none';
+            title.style.color = 'var(--accent)';
+            title.innerText = '温馨提示';
+            text.innerHTML = errorMsg;
+            countdownDiv.classList.add('hidden');
+            
+            actionBtn.classList.remove('hidden');
+            actionBtn.innerText = '关闭并刷新';
+            actionBtn.onclick = () => {
+                window.location.reload();
+            };
+        }
+
+        function submitFeedback() {
+            const content = document.getElementById('feedback-content').value.trim();
+            if (!content) return alert('请填写反馈内容');
+            fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'submit_feedback', content: content })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('反馈提交成功！感谢您的建议。');
+                    document.getElementById('feedback-content').value = '';
+                } else alert('提交失败: ' + data.message);
+            })
+            .catch(err => alert('网络错误，提交失败'));
+        }
+
+        // ==================== 页面初始化 ====================
+        // 底部玻璃拟态导航栏初始化
+        function initGlassNavbar() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const slider = document.getElementById('navbarSlider');
+            
+            // 移动滑块到选中项
+            function moveSlider(item) {
+                const itemWidth = item.offsetWidth;
+                const itemLeft = item.offsetLeft;
+                const sliderWidth = itemWidth - 16;
+                
+                slider.style.width = sliderWidth + 'px';
+                slider.style.left = (itemLeft + 8) + 'px';
+            }
+            
+            // 初始化滑块位置
+            const activeItem = document.querySelector('.nav-item.active');
+            if (activeItem) {
+                setTimeout(() => moveSlider(activeItem), 100);
+            }
+            
+            // 点击事件处理 - 始终允许正常跳转
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // 延迟更新视觉状态，让跳转先发生
+                    setTimeout(() => {
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        this.classList.add('active');
+                        moveSlider(this);
+                    }, 100);
+                    
+                    const targetPage = this.getAttribute('href');
+                    console.log('导航到：' + targetPage);
+                    // 不再阻止默认行为，让链接自然跳转
+                });
+                
+                item.addEventListener('mousedown', function() {
+                    const icon = this.querySelector('i');
+                    icon.style.transform = 'scale(0.95)';
+                });
+                
+                item.addEventListener('mouseup', function() {
+                    const icon = this.querySelector('i');
+                    if (this.classList.contains('active')) {
+                        icon.style.transform = 'scale(1.15) translateY(-3px)';
+                    } else {
+                        icon.style.transform = '';
+                    }
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    const icon = this.querySelector('i');
+                    if (this.classList.contains('active')) {
+                        icon.style.transform = 'scale(1.15) translateY(-3px)';
+                    } else {
+                        icon.style.transform = '';
+                    }
+                });
+            });
+            
+            window.addEventListener('resize', () => {
+                const currentItem = document.querySelector('.nav-item.active');
+                if (currentItem) {
+                    moveSlider(currentItem);
+                }
+            });
+        }
+
+        // ==================== 试听功能 ====================
+        let currentAudioSource = null;
+        let currentSongLyrics = [];
+
+        function previewSong(songId, songName) {
+            const previewBtn = document.getElementById(`preview-btn-${songId}`);
+            if (previewBtn.disabled) return;
+
+            previewBtn.disabled = true;
+            previewBtn.classList.add('loading');
+            previewBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加载中...';
+
+            // 调用 api.php 获取音频直链
+            fetch(`api.php?action=music_url&id=${songId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.url && data.url.startsWith('http')) {
+                        currentAudioSource = {
+                            url: data.url,
+                            name: songName,
+                            id: songId
+                        };
+                        playAudio(data.url, songName);
+                        
+                        // 获取歌曲详情（包括封面）
+                        fetchMusicDetail(songId);
+                        
+                        // 获取歌词
+                        fetchLyricForSubmit(songId);
+                        
+                        previewBtn.classList.remove('loading');
+                        previewBtn.disabled = false;
+                        previewBtn.innerHTML = '<i class="fas fa-play"></i> 试听';
+                    } else {
+                        throw new Error('获取音频链接失败');
+                    }
+                })
+                .catch(err => {
+                    console.error('试听加载失败:', err);
+                    alert('试听加载失败：' + (err.message || '服务器响应异常'));
+                    previewBtn.classList.remove('loading');
+                    previewBtn.disabled = false;
+                    previewBtn.innerHTML = '<i class="fas fa-play"></i> 试听';
+                });
+        }
+
+        function playAudio(url, songName) {
+            const audio = document.getElementById('preview-audio');
+            const controls = document.getElementById('music-controls');
+            
+            audio.src = url;
+            controls.classList.add('active');
+            
+            // 自动播放
+            audio.play().catch(err => {
+                console.error('播放失败:', err);
+                alert('音频播放失败，请检查网络连接');
+            });
+            
+            // 同步到全局音乐管理器（延迟执行，确保 currentAudioSource 已设置）
+            setTimeout(() => {
+                if (window.GlobalMusicManager && window.currentAudioSource) {
+                    window.GlobalMusicManager.play({
+                        id: window.currentAudioSource.id || '',
+                        name: window.currentAudioSource.name || songName,
+                        artist: window.currentSongData ? window.currentSongData.artist : '未知歌手',
+                        url: url,
+                        coverUrl: window.currentSongData ? window.currentSongData.coverUrl : ''
+                    });
+                }
+            }, 100);
+        }
+
+        // 获取歌曲详情（封面和歌手）
+        function fetchMusicDetail(songId) {
+            fetch(`api.php?action=music_detail&id=${songId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.songs && data.songs[0]) {
+                        const song = data.songs[0];
+                        
+                        // 获取封面
+                        if (song.al && song.al.picUrl) {
+                            const coverUrl = song.al.picUrl;
+                            // 更新播放条封面
+                            const coverImg = document.getElementById('playerCoverImg');
+                            if (coverImg) {
+                                coverImg.src = coverUrl;
+                            }
+                            
+                            // 更新 currentSong 的封面
+                            if (window.currentSongData) {
+                                window.currentSongData.coverUrl = coverUrl;
+                            }
+                        }
+                        
+                        // 获取歌手信息
+                        let artistName = '未知歌手';
+                        if (song.ar && song.ar.length > 0) {
+                            const artists = song.ar.map(ar => ar.name).filter(name => name);
+                            if (artists.length > 0) {
+                                artistName = artists.join('/');
+                            }
+                        }
+                        
+                        // 更新播放条歌手显示
+                        const artistEl = document.getElementById('playerArtist');
+                        if (artistEl) {
+                            artistEl.textContent = artistName;
+                        }
+                        
+                        // 更新 currentSong 的歌手信息
+                        if (window.currentSongData) {
+                            window.currentSongData.artist = artistName;
+                        }
+                        
+                        // 如果全屏播放器已打开，也更新标题
+                        const fspArtist = document.getElementById('fspArtist');
+                        if (fspArtist && document.getElementById('fullScreenPlayer').classList.contains('active')) {
+                            fspArtist.textContent = artistName;
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('获取歌曲详情失败:', err);
+                });
+        }
+
+        // 解析 LRC 格式
+        function parseLrc(lrcText) {
+            const lines = lrcText.split('\n');
+            const result = [];
+            const timeReg = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/;
+            
+            lines.forEach(line => {
+                const match = timeReg.exec(line);
+                if (match) {
+                    const min = parseInt(match[1]);
+                    const sec = parseInt(match[2]);
+                    const ms = match[3] ? parseFloat("0." + match[3]) : 0;
+                    const time = min * 60 + sec + ms;
+                    const text = line.replace(timeReg, '').trim();
+                    
+                    if (text) {
+                        result.push({ time, text });
+                    }
+                }
+            });
+            return result;
+        }
+
+        // 获取歌词
+        function fetchLyricForSubmit(songId) {
+            currentSongLyrics = [];
+            
+            // 先获取歌曲详情以获取 lyric_url
+            fetch(`api.php?action=music_detail&id=${songId}`)
+                .then(res => res.json())
+                .then(detailData => {
+                    if (detailData.songs && detailData.songs[0]) {
+                        const song = detailData.songs[0];
+                        // 构造网易云歌词API URL
+                        const lyricUrl = `https://music.163.com/api/song/lyric?os=pc&id=${songId}&lv=-1`;
+                        
+                        // 通过投票页的 music_api_handler.php 中转获取歌词
+                        return fetch(`../vote/music_api_handler.php?action=get_lyric&url=${encodeURIComponent(lyricUrl)}`);
+                    }
+                    throw new Error('无法获取歌曲信息');
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.lrc && data.lrc.lyric) {
+                        currentSongLyrics = parseLrc(data.lrc.lyric);
+                        
+                        // 如果全屏播放器已打开，立即更新
+                        if (typeof window.updateFullScreenPlayer === 'function' && window.currentAudio) {
+                            window.updateFullScreenPlayer(
+                                currentSongLyrics,
+                                window.currentAudio.currentTime,
+                                window.currentAudio.duration,
+                                !window.currentAudio.paused
+                            );
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('获取歌词失败:', err);
+                    currentSongLyrics = [];
+                });
+        }
+
+        function closePreview() {
+            const audio = document.getElementById('preview-audio');
+            const controls = document.getElementById('music-controls');
+            
+            audio.pause();
+            audio.src = '';
+            controls.classList.remove('active');
+        }
+
+        // ==================== 底部播放条和全屏播放器初始化 ====================
+        function initMusicPlayerBar() {
+            const playerBar = document.getElementById('musicPlayerBar');
+            const playBtn = document.getElementById('playerPlayBtn');
+            const albumCover = document.getElementById('playerAlbumCover');
+            const titleEl = document.getElementById('playerTitle');
+            const artistEl = document.getElementById('playerArtist');
+            const coverImg = document.getElementById('playerCoverImg');
+            const playerInfo = document.getElementById('playerInfo');
+            const playerLyricDisplay = document.getElementById('playerLyricDisplay');
+            const playerLyricText = document.getElementById('playerLyricText');
+            
+            let currentAudio = null;
+            let currentSong = null;
+            let hasLyrics = false;
+            
+            // 监听音频播放事件
+            document.addEventListener('play', function(e) {
+                if (e.target.tagName === 'AUDIO' && e.target.id === 'preview-audio') {
+                    const audio = e.target;
+                    
+                    if (currentAudioSource) {
+                        // 更新播放条信息（歌手信息会在 fetchMusicDetail 中更新）
+                        titleEl.textContent = currentAudioSource.name || '未知歌曲';
+                        artistEl.textContent = '加载中...';
+                        
+                        // 显示播放条
+                        playerBar.classList.add('active');
+                        albumCover.classList.add('playing');
+                        
+                        // 更新播放按钮图标
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        
+                        currentAudio = audio;
+                        window.currentAudio = audio; // 全局引用
+                        currentSong = { 
+                            title: currentAudioSource.name || '未知歌曲', 
+                            artist: '未知歌手',
+                            coverUrl: '' 
+                        };
+                        window.currentSongData = currentSong; // 全局引用
+                    }
+                }
+            }, true);
+            
+            // 监听暂停事件
+            document.addEventListener('pause', function(e) {
+                if (e.target.tagName === 'AUDIO' && e.target.id === 'preview-audio' && e.target === currentAudio) {
+                    albumCover.classList.remove('playing');
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            }, true);
+            
+            // 监听播放结束事件
+            document.addEventListener('ended', function(e) {
+                if (e.target.tagName === 'AUDIO' && e.target.id === 'preview-audio' && e.target === currentAudio) {
+                    albumCover.classList.remove('playing');
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    hidePlayerLyric();
+                }
+            }, true);
+            
+            // 监听时间更新，同步歌词
+            document.addEventListener('timeupdate', function(e) {
+                if (e.target.tagName === 'AUDIO' && e.target.id === 'preview-audio' && e.target === currentAudio) {
+                    if (currentSongLyrics && currentSongLyrics.length > 0) {
+                        // 同步更新全屏播放器
+                        if (typeof window.updateFullScreenPlayer === 'function') {
+                            window.updateFullScreenPlayer(
+                                currentSongLyrics,
+                                currentAudio.currentTime,
+                                currentAudio.duration,
+                                !currentAudio.paused
+                            );
+                        }
+                    }
+                }
+            }, true);
+            
+            // 播放/暂停按钮点击事件
+            playBtn.addEventListener('click', function() {
+                if (currentAudio) {
+                    if (currentAudio.paused) {
+                        currentAudio.play().catch(err => {
+                            console.error('播放失败:', err);
+                        });
+                    } else {
+                        currentAudio.pause();
+                    }
+                }
+            });
+            
+            // 点击播放条打开全屏播放器
+            playerBar.addEventListener('click', function(e) {
+                if (!e.target.closest('.player-btn')) {
+                    openFullScreenPlayer();
+                }
+            });
+
+            // 全屏播放器逻辑
+            const fullScreenPlayer = document.getElementById('fullScreenPlayer');
+            const fspBackBtn = document.getElementById('fspBackBtn');
+            const fspTitle = document.getElementById('fspTitle');
+            const fspArtist = document.getElementById('fspArtist');
+            const fspLyricsContent = document.getElementById('fspLyricsContent');
+            const fspCurrentTime = document.getElementById('fspCurrentTime');
+            const fspTotalTime = document.getElementById('fspTotalTime');
+            const fspProgressFill = document.getElementById('fspProgressFill');
+            const fspProgressBar = document.getElementById('fspProgressBar');
+            const fspPlayBtn = document.getElementById('fspPlayBtn');
+
+            // 歌词滚动控制变量
+            let isUserScrolling = false;
+            let scrollTimeout = null;
+            let lastScrollTime = 0;
+
+            function openFullScreenPlayer() {
+                if (!currentSong) return;
+                
+                fspTitle.textContent = currentSong.title;
+                fspArtist.textContent = currentSong.artist;
+                
+                // 渲染歌词
+                renderFullScreenLyrics(currentSongLyrics);
+                
+                fullScreenPlayer.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeFullScreenPlayer() {
+                fullScreenPlayer.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            fspBackBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeFullScreenPlayer();
+            });
+
+            // 监听歌词滚动事件
+            const fspLyricsScroll = document.getElementById('fspLyricsScroll');
+            if (fspLyricsScroll) {
+                fspLyricsScroll.addEventListener('scroll', function() {
+                    isUserScrolling = true;
+                    lastScrollTime = Date.now();
+                    
+                    // 清除之前的定时器
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                    }
+                    
+                    // 设置3秒后自动回位的定时器
+                    scrollTimeout = setTimeout(() => {
+                        isUserScrolling = false;
+                        // 立即回到当前播放位置
+                        if (currentAudio && currentLyricLines && currentLyricLines.length > 0) {
+                            window.updateFullScreenPlayer(
+                                currentLyricLines,
+                                currentAudio.currentTime,
+                                currentAudio.duration,
+                                !currentAudio.paused
+                            );
+                        }
+                    }, 3000);
+                });
+            }
+
+            function renderFullScreenLyrics(lyricLines) {
+                fspLyricsContent.innerHTML = '';
+                if (!lyricLines || lyricLines.length === 0) {
+                    fspLyricsContent.innerHTML = '<div class="fsp-lyric-line active">暂无歌词</div>';
+                    return;
+                }
+
+                lyricLines.forEach((line, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'fsp-lyric-line';
+                    div.textContent = line.text;
+                    div.dataset.time = line.time;
+                    div.dataset.index = index;
+                    div.addEventListener('click', () => seekTo(line.time));
+                    fspLyricsContent.appendChild(div);
+                });
+            }
+
+            window.updateFullScreenPlayer = function(lyricLines, currentTime, duration, isPlaying) {
+                if (!fullScreenPlayer.classList.contains('active')) return;
+
+                fspCurrentTime.textContent = formatTime(currentTime);
+                fspTotalTime.textContent = formatTime(duration || 0);
+                
+                if (duration) {
+                    const percent = (currentTime / duration) * 100;
+                    fspProgressFill.style.width = `${percent}%`;
+                }
+
+                fspPlayBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+
+                if (lyricLines && lyricLines.length > 0) {
+                    let curIndex = lyricLines.findIndex(line => line.time > currentTime) - 1;
+                    if (curIndex < 0) {
+                        if (currentTime < lyricLines[0].time) curIndex = -1;
+                        else curIndex = lyricLines.length - 1;
+                    }
+
+                    const lines = fspLyricsContent.querySelectorAll('.fsp-lyric-line');
+                    lines.forEach(l => l.classList.remove('active'));
+                    
+                    if (curIndex >= 0 && lines[curIndex]) {
+                        lines[curIndex].classList.add('active');
+                        // 只有在用户没有手动滚动时才自动滚动
+                        if (!isUserScrolling) {
+                            lines[curIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                }
+            };
+
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return "0:00";
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m}:${s.toString().padStart(2, '0')}`;
+            }
+
+            fspProgressBar.addEventListener('click', (e) => {
+                if (!currentAudio || !currentAudio.duration) return;
+                const rect = fspProgressBar.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                seekTo(percent * currentAudio.duration);
+            });
+
+            function seekTo(time) {
+                if (currentAudio) {
+                    currentAudio.currentTime = time;
+                    if (currentAudio.paused) currentAudio.play();
+                }
+            }
+
+            fspPlayBtn.addEventListener('click', () => {
+                if (currentAudio) {
+                    if (currentAudio.paused) currentAudio.play();
+                    else currentAudio.pause();
+                }
+            });
+            
+            function showPlayerLyric() {
+                playerLyricDisplay.classList.add('active');
+                playerInfo.classList.add('show-lyric');
+            }
+            
+            function hidePlayerLyric() {
+                playerLyricDisplay.classList.remove('active');
+                playerInfo.classList.remove('show-lyric');
+                hasLyrics = false;
+            }
+        }
+
+        // 页面加载完成后初始化播放器
+        document.addEventListener('DOMContentLoaded', function() {
+            initMusicPlayerBar();
+        });
+
+    </script>
+    
+    <script>
+        // ==================== 找不到歌曲反馈功能（全局函数） ====================
+        window.openNoSongFoundFeedback = function() {
+            const modal = document.getElementById('feedback-modal');
+            const input = document.getElementById('feedback-input');
+            if (!modal) {
+                console.error('找不到反馈模态框元素');
+                return;
+            }
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('active');
+                if (input) {
+                    input.focus();
+                }
+            }, 10);
+            if (input) {
+                input.value = '';
+            }
+        };
+        
+        window.closeFeedbackModal = function() {
+            const modal = document.getElementById('feedback-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                const input = document.getElementById('feedback-input');
+                if (input) {
+                    input.value = '';
+                }
+            }
+        };
+        
+        window.confirmFeedback = function() {
+            const input = document.getElementById('feedback-input');
+            const feedback = input ? input.value.trim() : '';
+            if (!feedback) {
+                alert('请输入反馈内容');
+                return;
+            }
+            window.submitNoSongFoundFeedback(feedback);
+        };
+        
+        window.submitNoSongFoundFeedback = function(feedback) {
+            fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'submit_feedback',
+                    type: 'music',
+                    content: '【找不到歌曲反馈】' + feedback,
+                    contact: ''
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.closeFeedbackModal();
+                    alert('感谢您的反馈！我们会尽快添加您想要的歌曲。');
+                } else {
+                    alert('提交失败: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('提交失败:', err);
+                alert('提交失败，请检查网络连接');
+            });
+        };
+        
+        // 点击模态框外部关闭
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('feedback-modal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        window.closeFeedbackModal();
+                    }
+                });
+            }
+            
+            // 初始化底部玻璃导航栏
+            if (typeof initGlassNavbar === 'function') {
+                initGlassNavbar();
+            }
+        });
+        
+        // 页面加载完成后执行初始化
+        window.addEventListener('load', () => {
+            if (typeof initGlassNavbar === 'function') {
+                initGlassNavbar();
+            }
+        });
+        
+        // 检查功能开关状态
+        function checkSubmitFeatureSettings() {
+            fetch('../vote/settings_api.php?action=get')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const settings = data.data;
+                        
+                        // 如果投稿功能关闭，显示覆盖层
+                        if (!settings.submit_enabled) {
+                            const overlay = document.getElementById('submitOverlay');
+                            const content = document.getElementById('submitOverlayContent');
+                            
+                            if (overlay && content) {
+                                // 消息显示在内容区，按钮始终在下方
+                                const message = settings.submit_closed_message || '<i class="fas fa-clock icon"></i><p>暂未开启投稿，请耐心等待</p>';
+                                const button = `<button class="dev-test-btn" onclick="showDevTestInput('submit')">
+                                    <i class="fas fa-code"></i> 开发者测试入口
+                                </button>`;
+                                
+                                content.innerHTML = message + button;
+                                
+                                overlay.classList.add('active');
+                                
+                                // 禁用投稿按钮
+                                disableSubmitButtons();
+                            }
+                        }
+                    }
+                })
+                .catch(err => console.error('检查功能设置失败', err));
+        }
+        
+        // 禁用所有投稿按钮
+        function disableSubmitButtons() {
+            const submitBtns = document.querySelectorAll('.submit-btn');
+            submitBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            });
+            
+            const searchBtn = document.querySelector('.search-box button');
+            if (searchBtn) {
+                searchBtn.disabled = true;
+                searchBtn.style.opacity = '0.5';
+                searchBtn.style.cursor = 'not-allowed';
+            }
+        }
+        
+        // 开发者测试相关
+        const DEV_PASSWORD = 'xwbdszq';
+        let currentDevPage = '';
+        
+        function showDevTestInput(page) {
+            currentDevPage = page;
+            const modal = document.getElementById('devModal');
+            const input = document.getElementById('devPassword');
+            const error = document.querySelector('.dev-error');
+            if (modal) {
+                modal.classList.add('active');
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+                if (error) error.classList.remove('show');
+            }
+        }
+        
+        function closeDevModal() {
+            const modal = document.getElementById('devModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        function verifyDevPassword() {
+            const input = document.getElementById('devPassword');
+            const error = document.querySelector('.dev-error');
+            if (!input) return;
+            
+            const password = input.value.trim();
+            
+            if (password === DEV_PASSWORD) {
+                // 密码正确，隐藏覆盖层
+                const overlay = document.getElementById(currentDevPage === 'vote' ? 'voteOverlay' : 'submitOverlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                closeDevModal();
+                
+                // 恢复投稿按钮
+                enableSubmitButtons();
+            } else {
+                // 密码错误
+                if (error) {
+                    error.textContent = '密码错误，请重试';
+                    error.classList.add('show');
+                }
+                input.value = '';
+                input.focus();
+            }
+        }
+        
+        // 恢复投稿按钮
+        function enableSubmitButtons() {
+            const submitBtns = document.querySelectorAll('.submit-btn');
+            submitBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+            });
+            
+            const searchBtn = document.querySelector('.search-box button');
+            if (searchBtn) {
+                searchBtn.disabled = false;
+                searchBtn.style.opacity = '';
+                searchBtn.style.cursor = '';
+            }
+        }
+        
+        // 回车键确认
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const modal = document.getElementById('devModal');
+                if (modal && modal.classList.contains('active')) {
+                    verifyDevPassword();
+                }
+            }
+            if (e.key === 'Escape') {
+                closeDevModal();
+            }
+        });
+        
+        // 点击弹窗外部关闭
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('devModal');
+            if (modal && modal.classList.contains('active')) {
+                if (e.target === modal) {
+                    closeDevModal();
+                }
+            }
+        });
+        
+        // 页面加载时检查功能状态
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkSubmitFeatureSettings, 500);
+        });
+    </script>
+    
+    <!-- 全局音乐管理器 -->
+    <script src="../music_manager.js"></script>
+</body>
+</html>
