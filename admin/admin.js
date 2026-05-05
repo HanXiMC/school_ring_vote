@@ -4,6 +4,9 @@ const API_BASE = '/submit/api.php';
 const VOTE_API_BASE = '/vote/';
 const SETTINGS_API = '/vote/settings_api.php';
 
+//全局单例音频对象
+let currentGlobalAudio = null;
+
 // ==================== 工具函数 ====================
 // 防抖函数
 function debounce(func, wait) {
@@ -98,7 +101,7 @@ function switchModule(moduleId) {
     // 显示目标面板
     document.getElementById(moduleId).classList.add('active');
     
-    // 更新导航激活状态（此处的 event 在 onclick 里自动传入）
+    // 更新导航激活状态
     if (window.event && window.event.currentTarget) {
         window.event.currentTarget.classList.add('active');
     }
@@ -300,9 +303,16 @@ window.previewAdminSong = function(songId, songName, containerId) {
         alert('找不到音频元素');
         return;
     }
+
+    document.querySelectorAll('audio').forEach(a => {
+        if (a !== audioElem && !a.paused) a.pause();
+    });
+    if (currentGlobalAudio && !currentGlobalAudio.paused) {
+        currentGlobalAudio.pause();
+    }
     
     // 如果没有src，需要先获取
-    if (!audioElem.src) {
+    if (!audioElem.src || audioElem.src === window.location.href) {
         console.log('[试听] 正在获取音频URL...');
         fetch('/submit/api.php?action=music_url&id=' + songId)
             .then(res => res.json())
@@ -760,19 +770,33 @@ function renderMusicList() {
 }
 
 window.playLocalMusic = function(file) {
+    if (currentGlobalAudio) {
+        currentGlobalAudio.pause();
+    }
+    document.querySelectorAll('audio').forEach(a => {
+        if (!a.paused) a.pause();
+    });
+
     requestAnimationFrame(() => {
-        const audio = new Audio('../vote/audio/' + file);
-        audio.preload = 'metadata';
-        audio.play().catch(err => console.error('播放失败:', err));
+        currentGlobalAudio = new Audio('../vote/audio/' + file);
+        currentGlobalAudio.preload = 'metadata';
+        currentGlobalAudio.play().catch(err => console.error('播放失败:', err));
     });
 };
 
 window.playOnlineMusic = function(url) {
     if (!url) return alert('暂无播放链接');
+    if (currentGlobalAudio) {
+        currentGlobalAudio.pause();
+    }
+    document.querySelectorAll('audio').forEach(a => {
+        if (!a.paused) a.pause();
+    });
+
     requestAnimationFrame(() => {
-        const audio = new Audio(url);
-        audio.preload = 'metadata';
-        audio.play().catch(err => console.error('播放失败:', err));
+        currentGlobalAudio = new Audio(url);
+        currentGlobalAudio.preload = 'metadata';
+        currentGlobalAudio.play().catch(err => console.error('播放失败:', err));
     });
 };
 
@@ -2012,6 +2036,7 @@ window.addEventListener('DOMContentLoaded', function() {
         let isDown = false;
         let startX;
         let scrollLeft;
+        let scrollTicking = false;
         
         sidebar.addEventListener('mousedown', (e) => {
             isDown = true;
@@ -2030,9 +2055,15 @@ window.addEventListener('DOMContentLoaded', function() {
         sidebar.addEventListener('mousemove', (e) => {
             if (!isDown) return;
             e.preventDefault();
-            const x = e.pageX - sidebar.offsetLeft;
-            const walk = (x - startX) * 2;
-            sidebar.scrollLeft = scrollLeft - walk;
+            if (!scrollTicking) {
+                window.requestAnimationFrame(() => {
+                    const x = e.pageX - sidebar.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    sidebar.scrollLeft = scrollLeft - walk;
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
         });
     }
     
