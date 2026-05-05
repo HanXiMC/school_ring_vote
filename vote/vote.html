@@ -1265,6 +1265,14 @@
                 bottom: 20px;
                 gap: 5px;
                 width: calc(100% - 40px); /* 固定宽度计算 */
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+
+            .full-screen-player {
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                background: rgba(20, 20, 20, 0.98);
             }
 
             .music-player-bar {
@@ -1320,7 +1328,7 @@
             }
         }
 
-@media (max-width: 480px) {
+        @media (max-width: 480px) {
             .glass-navbar {
                 min-width: calc(100% - 30px);
                 max-width: calc(100% - 30px);
@@ -1567,7 +1575,6 @@
     </style>
 </head>
 <body>
-    <!-- 音质选择弹窗 -->
     <div class="quality-modal" id="qualityModal">
         <div class="quality-modal-content">
             <div class="quality-modal-title">
@@ -1624,14 +1631,12 @@
         </div>
     </header>
 
-    <!-- 活动栏 -->
     <div class="activity-bar">
         <div class="activity-scroll" id="activityScroll">
 
         </div>
     </div>
 
-    <!-- 公告弹窗 -->
     <div class="popup-overlay" id="popup">
         <div class="popup-content">
             <span class="close-icon" onclick="closePopup()">×</span>
@@ -1645,7 +1650,6 @@
         </div>
     </div>
 
-    <!-- 音频模板 -->
     <template id="songTemplate">
         <div class="audio-section">
             <h2><i class="fas fa-music"></i> </h2>
@@ -1666,7 +1670,6 @@
         <p>© 2025-2026 新闻部 - 起床铃投票系统</p>
     </footer>
 
-    <!-- 底部播放条 -->
     <div class="music-player-bar" id="musicPlayerBar">
         <div class="player-album-cover" id="playerAlbumCover">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ddd'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='%23999'%3E♪%3C/text%3E%3C/svg%3E" alt="专辑封面" id="playerCoverImg">
@@ -1685,7 +1688,6 @@
         </div>
     </div>
 
-    <!-- 全屏歌词播放器 -->
     <div class="full-screen-player" id="fullScreenPlayer">
         <div class="fsp-header">
             <button class="fsp-back-btn" id="fspBackBtn">
@@ -1701,8 +1703,7 @@
         <div class="fsp-lyrics-container" id="fspLyricsContainer">
             <div class="fsp-lyrics-scroll" id="fspLyricsScroll">
                 <div class="fsp-lyrics-content" id="fspLyricsContent">
-                    <!-- 歌词将动态插入这里 -->
-                </div>
+                    </div>
             </div>
         </div>
 
@@ -1720,7 +1721,6 @@
         </div>
     </div>
 
-    <!-- 底部玻璃拟态导航栏 -->
     <nav class="glass-navbar">
         <div class="navbar-slider" id="navbarSlider"></div>
         <a href="vote.html" class="nav-item active" data-page="vote">
@@ -1741,7 +1741,6 @@
         </a>        
     </nav>
 
-    <!-- 功能关闭覆盖层 -->
     <div class="feature-overlay" id="voteOverlay">
         <div class="feature-overlay-content" id="voteOverlayContent">
             <i class="fas fa-clock icon"></i>
@@ -1752,7 +1751,6 @@
         </div>
     </div>
     
-    <!-- 开发者测试密码输入弹窗 -->
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-content">
             <h3><i class="fas fa-lock"></i> 管理员测试</h3>
@@ -2076,42 +2074,7 @@
             }
 
             setupAudioKeepAlive(audioElement) {
-                const audioId = audioElement._keepAliveId = audioElement._keepAliveId || 'audio_' + Date.now() + '_' + Math.random();
-                
-                // 清除旧的保活定时器
-                if (this.audioKeepAliveIntervals.has(audioId)) {
-                    clearInterval(this.audioKeepAliveIntervals.get(audioId));
-                }
-                
-                // 设置保活机制：定期触发音频缓冲检查
-                const keepAliveInterval = setInterval(() => {
-                    if (!audioElement.paused && audioElement.duration > 0) {
-                        // 触发音频缓冲状态更新，保持连接活跃
-                        const buffered = audioElement.buffered;
-                        if (buffered.length > 0) {
-                            const bufferedEnd = buffered.end(buffered.length - 1);
-                            const currentTime = audioElement.currentTime;
-                            
-                            // 如果接近缓冲末尾，触发额外缓冲
-                            if (bufferedEnd - currentTime < audioElement.duration * 0.15) {
-                                audioElement.play().catch(e => console.log('保活播放失败', e));
-                            }
-                        }
-                    }
-                }, 10000); // 每 10 秒检查一次
-                
-                this.audioKeepAliveIntervals.set(audioId, keepAliveInterval);
-                
-                // 停止时清除保活
-                const onStop = () => {
-                    if (this.audioKeepAliveIntervals.has(audioId)) {
-                        clearInterval(this.audioKeepAliveIntervals.get(audioId));
-                        this.audioKeepAliveIntervals.delete(audioId);
-                    }
-                };
-                
-                audioElement.addEventListener('pause', onStop, { once: false });
-                audioElement.addEventListener('ended', onStop, { once: false });
+                // 已清空内部逻辑，让浏览器自身管理缓冲
             }
 
             cleanup() {
@@ -2878,6 +2841,7 @@
             let isUserScrolling = false;
             let scrollTimeout = null;
             let lastScrollTime = 0;
+            let scrollTicking = false; // 用于 requestAnimationFrame 节流
 
             function openFullScreenPlayer() {
                 if (!currentSong) return;
@@ -2902,29 +2866,35 @@
                 closeFullScreenPlayer();
             });
 
-            // 监听歌词滚动事件
+            // 监听歌词滚动事件 (已添加 requestAnimationFrame 节流控制)
             fspLyricsScroll.addEventListener('scroll', function() {
-                isUserScrolling = true;
-                lastScrollTime = Date.now();
-                
-                // 清除之前的定时器
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
+                if (!scrollTicking) {
+                    window.requestAnimationFrame(function() {
+                        isUserScrolling = true;
+                        lastScrollTime = Date.now();
+                        
+                        // 清除之前的定时器
+                        if (scrollTimeout) {
+                            clearTimeout(scrollTimeout);
+                        }
+                        
+                        // 设置3秒后自动回位的定时器
+                        scrollTimeout = setTimeout(() => {
+                            isUserScrolling = false;
+                            // 立即回到当前播放位置
+                            if (currentAudio && currentSongLyrics && currentSongLyrics.length > 0) {
+                                updateFullScreenPlayer(
+                                    currentSongLyrics,
+                                    currentAudio.currentTime,
+                                    currentAudio.duration,
+                                    !currentAudio.paused
+                                );
+                            }
+                        }, 3000);
+                        scrollTicking = false;
+                    });
+                    scrollTicking = true;
                 }
-                
-                // 设置3秒后自动回位的定时器
-                scrollTimeout = setTimeout(() => {
-                    isUserScrolling = false;
-                    // 立即回到当前播放位置
-                    if (currentAudio && currentSongLyrics && currentSongLyrics.length > 0) {
-                        updateFullScreenPlayer(
-                            currentSongLyrics,
-                            currentAudio.currentTime,
-                            currentAudio.duration,
-                            !currentAudio.paused
-                        );
-                    }
-                }, 3000);
             });
 
             // 渲染全屏歌词
@@ -2972,13 +2942,18 @@
                     }
 
                     const lines = fspLyricsContent.querySelectorAll('.fsp-lyric-line');
-                    lines.forEach(l => l.classList.remove('active'));
                     
                     if (curIndex >= 0 && lines[curIndex]) {
+                        // 优化渲染：不再遍历所有节点移除 class
+                        if (window.lastActiveLine) window.lastActiveLine.classList.remove('active');
                         lines[curIndex].classList.add('active');
+                        window.lastActiveLine = lines[curIndex];
+                        
                         // 只有在用户没有手动滚动时才自动滚动
                         if (!isUserScrolling) {
-                            lines[curIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // 使用外层容器 translateY 实现平滑滚动
+                            const offset = lines[curIndex].offsetTop - fspLyricsScroll.clientHeight / 2 + lines[curIndex].clientHeight / 2;
+                            fspLyricsContent.style.transform = `translateY(-${offset}px)`;
                         }
                     }
                 }
@@ -3088,7 +3063,6 @@
         document.head.appendChild(style);
     </script>
     
-    <!-- 全局音乐管理器 -->
     <script src="../music_manager.js"></script>
 </body>
 </html>
