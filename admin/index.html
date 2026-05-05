@@ -116,6 +116,16 @@
         }
         
         @media (max-width: 768px) {
+            /* 削减视觉特效：降低移动端模糊滤镜性能消耗，禁用大面积高频背景重绘动画 */
+            .sidebar, .top-bar, .card, .stat-card, .login-box, .mobile-navbar {
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                background-color: rgba(255, 255, 255, 0.98) !important;
+            }
+            body::before {
+                animation: none !important; 
+            }
+
             .nav-item,
             .btn,
             .data-item button {
@@ -127,6 +137,237 @@
             
             * {
                 -webkit-tap-highlight-color: transparent;
+            }
+            
+            .sidebar {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 10px !important;
+                padding-bottom: 85px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            .mobile-navbar {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 60px !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                border-top: 1px solid #e0e0e0 !important;
+                z-index: 1000 !important;
+                display: flex !important;
+                align-items: center !important;
+                overflow-x: scroll !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: none !important;
+            }
+            
+            .mobile-navbar::-webkit-scrollbar {
+                display: none !important;
+            }
+            
+            .mobile-nav-section {
+                display: inline-flex !important;
+                flex-shrink: 0 !important;
+                white-space: nowrap !important;
+                margin: 0 3px !important;
+            }
+            
+            .mobile-nav-item {
+                display: inline-flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 6px 10px !important;
+                min-width: 60px !important;
+                flex-shrink: 0 !important;
+                font-size: 11px !important;
+                gap: 3px !important;
+                color: var(--text) !important;
+                white-space: nowrap !important;
+            }
+            
+            .mobile-nav-item i {
+                font-size: 18px !important;
+            }
+            
+            .mobile-nav-item.active {
+                color: var(--primary) !important;
+            }
+            
+            .top-bar {
+                padding: 10px !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .top-bar h1 {
+                font-size: 18px !important;
+            }
+            
+            .user-avatar {
+                width: 35px !important;
+                height: 35px !important;
+            }
+            
+            .logout-btn {
+                padding: 6px 12px !important;
+                font-size: 12px !important;
+            }
+            
+            .card {
+                padding: 15px !important;
+                margin-bottom: 15px !important;
+                border-radius: 8px !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            }
+            
+            .card-header {
+                flex-direction: column !important;
+                gap: 10px !important;
+                padding-bottom: 12px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .card-title {
+                font-size: 16px !important;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .stat-card {
+                padding: 12px !important;
+                border-radius: 8px !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem !important;
+            }
+            
+            .stat-label {
+                font-size: 11px !important;
+            }
+            
+            .data-item {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                padding: 12px !important;
+                border-radius: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            
+            .data-item img {
+                width: 100% !important;
+                height: auto !important;
+                max-height: 200px !important;
+                border-radius: 6px !important;
+            }
+            
+            .data-item .data-info {
+                width: 100% !important;
+                margin: 8px 0 !important;
+            }
+            
+            .data-item audio {
+                width: 100% !important;
+                margin: 6px 0 !important;
+            }
+            
+            .data-controls {
+                flex-direction: column !important;
+                gap: 6px !important;
+                margin-top: 8px !important;
+                width: 100% !important;
+                order: 4 !important;
+            }
+            
+            .data-controls audio {
+                width: 100% !important;
+                min-width: unset !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                order: 1 !important;
+            }
+            
+            .data-controls .btn-small {
+                width: 100% !important;
+                margin: 2px 0 !important;
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                min-height: 44px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 8px !important;
+            }
+            
+            .data-controls .btn-info {
+                order: 2 !important;
+            }
+            
+            .data-controls .btn-success {
+                order: 3 !important;
+            }
+            
+            .btn {
+                padding: 8px 14px !important;
+                font-size: 13px !important;
+                border-radius: 6px !important;
+            }
+            
+            .btn-small {
+                padding: 5px 10px !important;
+                font-size: 12px !important;
+            }
+            
+            input[type="text"],
+            input[type="password"],
+            input[type="url"],
+            textarea,
+            select {
+                font-size: 16px !important;
+                padding: 10px 12px !important;
+                border-radius: 6px !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .data-table {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            .data-table table {
+                min-width: 600px !important;
+            }
+            
+            .login-box {
+                padding: 30px 20px !important;
+                width: 90% !important;
+                border-radius: 12px !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            }
+            
+            .login-box h3 {
+                font-size: 20px !important;
+            }
+            
+            .login-box input,
+            .login-box button {
+                padding: 12px 16px !important;
+                font-size: 15px !important;
+                border-radius: 8px !important;
             }
         }
         
@@ -826,239 +1067,6 @@
             box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1);
         }
         
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none !important;
-            }
-            
-            .main-content {
-                margin-left: 0 !important;
-                padding: 10px !important;
-                padding-bottom: 85px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-            }
-            
-            .mobile-navbar {
-                position: fixed !important;
-                bottom: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                height: 60px !important;
-                background: #ffffff !important;
-                border-top: 1px solid #e0e0e0 !important;
-                z-index: 1000 !important;
-                display: flex !important;
-                align-items: center !important;
-                overflow-x: scroll !important;
-                overflow-y: hidden !important;
-                -webkit-overflow-scrolling: touch !important;
-                scrollbar-width: none !important;
-            }
-            
-            .mobile-navbar::-webkit-scrollbar {
-                display: none !important;
-            }
-            
-            .mobile-nav-section {
-                display: inline-flex !important;
-                flex-shrink: 0 !important;
-                white-space: nowrap !important;
-                margin: 0 3px !important;
-            }
-            
-            .mobile-nav-item {
-                display: inline-flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-                padding: 6px 10px !important;
-                min-width: 60px !important;
-                flex-shrink: 0 !important;
-                font-size: 11px !important;
-                gap: 3px !important;
-                color: var(--text) !important;
-                white-space: nowrap !important;
-            }
-            
-            .mobile-nav-item i {
-                font-size: 18px !important;
-            }
-            
-            .mobile-nav-item.active {
-                color: var(--primary) !important;
-            }
-            
-            .top-bar {
-                padding: 10px !important;
-                flex-direction: column !important;
-                gap: 10px !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .top-bar h1 {
-                font-size: 18px !important;
-            }
-            
-            .user-avatar {
-                width: 35px !important;
-                height: 35px !important;
-            }
-            
-            .logout-btn {
-                padding: 6px 12px !important;
-                font-size: 12px !important;
-            }
-            
-            .card {
-                padding: 15px !important;
-                margin-bottom: 15px !important;
-                border-radius: 8px !important;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-            }
-            
-            .card-header {
-                flex-direction: column !important;
-                gap: 10px !important;
-                padding-bottom: 12px !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .card-title {
-                font-size: 16px !important;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 10px !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .stat-card {
-                padding: 12px !important;
-                border-radius: 8px !important;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-            }
-            
-            .stat-number {
-                font-size: 1.5rem !important;
-            }
-            
-            .stat-label {
-                font-size: 11px !important;
-            }
-            
-            .data-item {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                padding: 12px !important;
-                border-radius: 8px !important;
-                margin-bottom: 8px !important;
-            }
-            
-            .data-item img {
-                width: 100% !important;
-                height: auto !important;
-                max-height: 200px !important;
-                border-radius: 6px !important;
-            }
-            
-            .data-item .data-info {
-                width: 100% !important;
-                margin: 8px 0 !important;
-            }
-            
-            .data-item audio {
-                width: 100% !important;
-                margin: 6px 0 !important;
-            }
-            
-            .data-controls {
-                flex-direction: column !important;
-                gap: 6px !important;
-                margin-top: 8px !important;
-                width: 100% !important;
-                order: 4 !important;
-            }
-            
-            .data-controls audio {
-                width: 100% !important;
-                min-width: unset !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                order: 1 !important;
-            }
-            
-            .data-controls .btn-small {
-                width: 100% !important;
-                margin: 2px 0 !important;
-                padding: 12px 16px !important;
-                font-size: 14px !important;
-                min-height: 44px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                border-radius: 8px !important;
-            }
-            
-            .data-controls .btn-info {
-                order: 2 !important;
-            }
-            
-            .data-controls .btn-success {
-                order: 3 !important;
-            }
-            
-            .btn {
-                padding: 8px 14px !important;
-                font-size: 13px !important;
-                border-radius: 6px !important;
-            }
-            
-            .btn-small {
-                padding: 5px 10px !important;
-                font-size: 12px !important;
-            }
-            
-            input[type="text"],
-            input[type="password"],
-            input[type="url"],
-            textarea,
-            select {
-                font-size: 16px !important;
-                padding: 10px 12px !important;
-                border-radius: 6px !important;
-                border: 1px solid #ddd !important;
-            }
-            
-            .data-table {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
-            }
-            
-            .data-table table {
-                min-width: 600px !important;
-            }
-            
-            .login-box {
-                padding: 30px 20px !important;
-                width: 90% !important;
-                border-radius: 12px !important;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
-            }
-            
-            .login-box h3 {
-                font-size: 20px !important;
-            }
-            
-            .login-box input,
-            .login-box button {
-                padding: 12px 16px !important;
-                font-size: 15px !important;
-                border-radius: 8px !important;
-            }
-        }
-        
         .switch input:checked + .slider-toggle {
             background: linear-gradient(135deg, var(--success), #34d399);
         }
@@ -1161,7 +1169,6 @@
     </style>
 </head>
 <body>
-    <!-- 登录界面 -->
     <div id="login-overlay">
         <div class="login-box">
             <div class="login-logo"><i class="fas fa-shield-alt"></i></div>
@@ -1171,9 +1178,7 @@
         </div>
     </div>
 
-    <!-- 主界面 -->
     <div class="app-container" id="app-container" style="display:none;">
-        <!-- 侧边栏 (PC 端) -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-cogs"></i> 新闻部管理后台</h2>
@@ -1248,7 +1253,6 @@
             </div>
         </aside>
 
-        <!-- 移动端底部导航栏 -->
         <nav class="mobile-navbar" id="mobileNavbar" style="display: none;">
             <div class="mobile-nav-section">
                 <div class="mobile-nav-item active" onclick="switchModule('submit-all'); updateMobileNavActive(this)">
@@ -1315,9 +1319,7 @@
             </div>
         </nav>
 
-        <!-- 主内容 -->
         <main class="main-content">
-            <!-- 顶部栏 -->
             <div class="top-bar">
                 <h1 id="pageTitle"><i class="fas fa-home"></i> 首页</h1>
                 <div class="user-info">
@@ -1326,7 +1328,6 @@
                 </div>
             </div>
 
-            <!-- 功能控制模块 -->
             <div id="settings-feature" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1334,11 +1335,9 @@
                         <button class="btn btn-primary" onclick="saveFeatureSettings()"><i class="fas fa-save"></i> 保存设置</button>
                     </div>
                     
-                    <!-- 功能开关控制 -->
                     <div style="margin-bottom:30px;">
                         <h4 style="margin-bottom:15px;color:var(--primary);"><i class="fas fa-power-off"></i> 功能开关</h4>
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
-                            <!-- 投票功能开关 -->
                             <div style="background:#f8f9fa;padding:20px;border-radius:12px;border-left:4px solid var(--success);">
                                 <div style="display:flex;justify-content:space-between;align-items:center;">
                                     <div>
@@ -1355,7 +1354,6 @@
                                 <div id="voteStatusText" style="margin-top:10px;font-size:13px;font-weight:600;"></div>
                             </div>
                             
-                            <!-- 投稿功能开关 -->
                             <div style="background:#f8f9fa;padding:20px;border-radius:12px;border-left:4px solid var(--primary);">
                                 <div style="display:flex;justify-content:space-between;align-items:center;">
                                     <div>
@@ -1374,7 +1372,6 @@
                         </div>
                     </div>
                     
-                    <!-- 自定义提示消息 -->
                     <div>
                         <h4 style="margin-bottom:15px;color:var(--primary);"><i class="fas fa-comment-dots"></i> 关闭提示消息（支持 HTML）</h4>
                         
@@ -1407,7 +1404,6 @@
                 </div>
             </div>
 
-            <!-- 投稿管理模块 -->
             <div id="submit-all" class="panel active">
                 <div class="card">
                     <div class="card-header">
@@ -1417,7 +1413,6 @@
                 </div>
             </div>
 
-            <!-- 反馈管理模块 -->
             <div id="feedback-list" class="panel">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -1442,7 +1437,6 @@
                 </div>
             </div>
 
-            <!-- Q&A 管理模块 -->
             <div id="submit-qa" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1458,7 +1452,6 @@
                 </div>
             </div>
 
-            <!-- 投票管理模块 -->
             <div id="vote-music" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1544,7 +1537,6 @@
                 </div>
             </div>
             
-            <!-- 歌曲下载管理面板 -->
             <div id="vote-download" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1586,7 +1578,6 @@
                 </div>
             </div>
 
-            <!-- 更新日志面板 -->
             <div id="settings-changelog" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1597,7 +1588,6 @@
                 </div>
             </div>
 
-            <!-- 更新日志添加/编辑弹窗 -->
             <div id="changelog-form-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;">
                 <div style="background:white;padding:30px;border-radius:15px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;">
                     <h3 style="margin-bottom:20px;color:var(--primary);"><i class="fas fa-edit"></i> 添加更新日志</h3>
@@ -1633,8 +1623,6 @@
                 </div>
             </div>
 
-            <!-- 系统设置模块 -->
-            <!-- 公告管理模块 -->
             <div id="settings-announcement" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1642,9 +1630,7 @@
                         <button class="btn btn-primary" onclick="saveVoteAnnouncement()"><i class="fas fa-save"></i> 保存</button>
                     </div>
                     
-                    <!-- 富文本编辑器容器 -->
                     <div class="rich-editor-wrapper" style="margin-top: 10px;">
-                        <!-- 工具栏 -->
                         <div class="rich-editor-toolbar" id="richEditorToolbar">
                             <button type="button" class="btn btn-sm" data-cmd="bold" title="加粗"><i class="fas fa-bold"></i></button>
                             <button type="button" class="btn btn-sm" data-cmd="italic" title="斜体"><i class="fas fa-italic"></i></button>
@@ -1660,7 +1646,6 @@
                             <button type="button" class="btn btn-sm" data-cmd="undo" title="撤销"><i class="fas fa-undo"></i></button>
                             <button type="button" class="btn btn-sm" data-cmd="redo" title="重做"><i class="fas fa-redo"></i></button>
                         </div>
-                        <!-- 可编辑区域 -->
                         <div id="voteAnnouncementEditorRich" class="rich-editor-content" contenteditable="true"></div>
                         <div class="rich-editor-note" style="font-size: 12px; color: #64748b; margin-top: 8px; text-align: right;">
                             <i class="fas fa-info-circle"></i> 选中文字后使用上方按钮调整样式
@@ -1669,7 +1654,6 @@
                 </div>
             </div>
 
-            <!-- 备份管理面板 -->
             <div id="settings-backup" class="panel">
                 <div class="card">
                     <div class="card-header">
@@ -1691,7 +1675,6 @@
                             </div>
                         </div>
                         
-                        <!-- 操作按钮 -->
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;">
                             <div style="background:rgba(255, 107, 107, 0.1);border:1px solid rgba(255, 107, 107, 0.3);border-radius:12px;padding:20px;">
                                 <h5 style="margin:0 0 10px 0;color:var(--accent);font-size:15px;"><i class="fas fa-trash-alt"></i> 删除所有备份文件</h5>
