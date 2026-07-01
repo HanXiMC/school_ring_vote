@@ -5,7 +5,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header("Access-Control-Allow-Headers: Content-Type");
     exit;
 }
-
+date_default_timezone_set('Asia/Shanghai');
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=utf-8");
 ini_set('display_errors', 0); 

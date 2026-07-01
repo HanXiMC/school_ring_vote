@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>起床铃投稿系统</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <!-- 引入 Font Awesome 和 字体 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -669,10 +668,9 @@
             max-width: 600px;
             height: 100%;
             overflow-y: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
             padding: 50% 20px;
             box-sizing: border-box;
+            scrollbar-width: none;
         }
 
         .fsp-lyrics-scroll::-webkit-scrollbar {
@@ -805,42 +803,31 @@
         }
 
         @media (max-width: 480px) {
-            .music-player-bar {
-                bottom: 85px;
-                min-width: calc(100% - 20px);
-                max-width: calc(100% - 20px);
-                width: calc(100% - 20px);
-                padding: 8px 10px;
-                gap: 8px;
+            .music-card-content {
+                padding: 12px;
+                gap: 10px;
             }
-
-            .player-album-cover {
-                width: 36px;
-                height: 36px;
+            
+            .music-cover {
+                width: 60px;
+                height: 60px;
             }
-
-            .player-title {
+            
+            .music-title {
+                font-size: 14px;
+            }
+            
+            .music-artist {
                 font-size: 12px;
             }
-
-            .player-artist {
-                font-size: 10px;
+            
+            .music-actions {
+                padding: 0 12px 12px 12px;
+                gap: 8px;
             }
-
-            .player-info {
-                height: 36px;
-            }
-
-            .player-lyric-text {
-                font-size: 13px;
-            }
-
-            .player-btn {
-                width: 28px;
-                height: 28px;
-            }
-
-            .player-btn i {
+            
+            .preview-btn, .submit-btn {
+                padding: 10px 12px;
                 font-size: 12px;
             }
         }
@@ -977,17 +964,6 @@
         .success-icon {
             font-size: 60px;
             margin-bottom: 20px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .success-text {
@@ -1130,36 +1106,6 @@
         }
 
         @media (max-width: 480px) {
-            .music-card-content {
-                padding: 12px;
-                gap: 10px;
-            }
-            
-            .music-cover {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .music-title {
-                font-size: 14px;
-            }
-            
-            .music-artist {
-                font-size: 12px;
-            }
-            
-            .music-actions {
-                padding: 0 12px 12px 12px;
-                gap: 8px;
-            }
-            
-            .preview-btn, .submit-btn {
-                padding: 10px 12px;
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
             .glass-navbar {
                 min-width: calc(100% - 30px);
                 max-width: calc(100% - 30px);
@@ -1254,12 +1200,6 @@
             transition: all 0.3s ease;
         }
         
-        .dev-test-btn:hover {
-            background: rgba(0, 77, 153, 0.15);
-            border-color: rgba(0, 77, 153, 0.5);
-            color: rgba(0, 77, 153, 0.8);
-        }
-        
         /* 开发者测试弹窗样式 */
         .dev-modal {
             position: fixed;
@@ -1339,18 +1279,10 @@
             color: #666;
         }
         
-        .dev-btn-cancel:hover {
-            background: #eee;
-        }
-        
         .dev-btn-confirm {
             background: #004d99;
             border: none;
             color: white;
-        }
-        
-        .dev-btn-confirm:hover {
-            background: #003366;
         }
         
         .dev-error {
@@ -1381,7 +1313,6 @@
         </div>
     </div>
     
-    <!-- 找不到歌曲反馈模态框 -->
     <div id="feedback-modal" class="modal-overlay hidden">
         <div class="modal-content" style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%;">
             <h2 style="color: var(--primary); margin-bottom: 15px; font-size: 1.3rem;"><i class="fas fa-exclamation-circle"></i> 提交反馈</h2>
@@ -1394,13 +1325,11 @@
         </div>
     </div>
     
-    <!-- 音乐播放器容器 -->
     <div id="music-controls" class="music-controls">
         <audio id="preview-audio" controls preload="metadata"></audio>
         <button class="close-btn" onclick="closePreview()"><i class="fas fa-times"></i></button>
     </div>
     
-    <!-- 底部播放条 -->
     <div class="music-player-bar" id="musicPlayerBar">
         <div class="player-album-cover" id="playerAlbumCover">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ddd'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='%23999'%3E♪%3C/text%3E%3C/svg%3E" alt="专辑封面" id="playerCoverImg">
@@ -1419,7 +1348,6 @@
         </div>
     </div>
 
-    <!-- 全屏歌词播放器 -->
     <div class="full-screen-player" id="fullScreenPlayer">
         <div class="fsp-header">
             <button class="fsp-back-btn" id="fspBackBtn">
@@ -1435,8 +1363,7 @@
         <div class="fsp-lyrics-container" id="fspLyricsContainer">
             <div class="fsp-lyrics-scroll" id="fspLyricsScroll">
                 <div class="fsp-lyrics-content" id="fspLyricsContent">
-                    <!-- 歌词将动态插入这里 -->
-                </div>
+                    </div>
             </div>
         </div>
 
@@ -1459,10 +1386,7 @@
         <h2>试听加载速度依据网速而定</h2>
         <h3>一般需要10s左右</h3>
 
-       <!-- <h3 style="color: red;">请注意 由于AI服务商原因 本次投稿AI审查出现问题 请不必担心 我们会对每一首歌进行人工审查</h3> -->
-
-
-        <div class="search-box">
+       <div class="search-box">
             <input type="text" id="search-input" placeholder="输入歌名/歌手搜索..." onkeypress="handleEnter(event)">
             <button onclick="searchMusic()"><i class="fas fa-search"></i> 搜索</button>
         </div>
@@ -1475,7 +1399,6 @@
         <button class="no-song-found-btn" onclick="openNoSongFoundFeedback()"><i class="fas fa-exclamation-circle"></i> 找不到想要的歌曲？提交反馈</button>
     </div>
     
-    <!-- 底部玻璃拟态导航栏 -->
     <nav class="glass-navbar">
         <div class="navbar-slider" id="navbarSlider"></div>
         <a href="../vote/vote.html" class="nav-item" data-page="vote">
@@ -1496,23 +1419,22 @@
         </a>
     </nav>
 
-    <!-- 功能关闭覆盖层 -->
     <div class="feature-overlay" id="submitOverlay">
         <div class="feature-overlay-content" id="submitOverlayContent">
             <i class="fas fa-clock icon"></i>
             <p>暂未开启投稿，请耐心等待</p>
             <button class="dev-test-btn" onclick="showDevTestInput('submit')">
-                <i class="fas fa-code"></i> 开发者测试入口
+                <i class="fas fa-code"></i> 管理员测试入口
             </button>
         </div>
     </div>
     
-    <!-- 开发者测试密码输入弹窗 -->
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-content">
-            <h3><i class="fas fa-lock"></i> 开发者测试</h3>
-            <p>请输入开发者测试密码：</p>
-            <input type="password" id="devPassword" placeholder="输入密码...">
+            <h3><i class="fas fa-lock"></i> 管理员身份验证</h3>
+            <p style="margin-bottom: 10px; font-size:13px; color:#666;">请输入管理账户及密码临时解除关闭状态：</p>
+            <input type="text" id="devUsername" placeholder="请输入管理员/超级管理员账号" style="margin-bottom:12px; display:block; width:100%; padding:12px 16px; border:2px solid #e0e0e0; border-radius:8px;">
+            <input type="password" id="devPassword" placeholder="请输入密码" style="margin-bottom:20px; display:block; width:100%; padding:12px 16px; border:2px solid #e0e0e0; border-radius:8px;">
             <p class="dev-error" id="devError"></p>
             <div class="dev-modal-buttons">
                 <button class="dev-btn-cancel" onclick="closeDevModal()">取消</button>
@@ -2378,7 +2300,7 @@
                                 // 消息显示在内容区，按钮始终在下方
                                 const message = settings.submit_closed_message || '<i class="fas fa-clock icon"></i><p>暂未开启投稿，请耐心等待</p>';
                                 const button = `<button class="dev-test-btn" onclick="showDevTestInput('submit')">
-                                    <i class="fas fa-code"></i> 开发者测试入口
+                                    <i class="fas fa-code"></i> 管理员测试入口
                                 </button>`;
                                 
                                 content.innerHTML = message + button;
@@ -2411,17 +2333,23 @@
             }
         }
         
-        // 开发者测试相关
-        const DEV_PASSWORD = 'xwbdszq';
+        // ==================== 【全新重构】：测试入口账号密码深度验证 ====================
+        async function hashPassword(password) {
+            const msgUint8 = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
         let currentDevPage = '';
         
         function showDevTestInput(page) {
             currentDevPage = page;
             const modal = document.getElementById('devModal');
+            const userNode = document.getElementById('devUsername');
             const input = document.getElementById('devPassword');
-            const error = document.querySelector('.dev-error');
+            const error = document.getElementById('devError');
             if (modal) {
                 modal.classList.add('active');
+                if (userNode) userNode.value = '';
                 if (input) {
                     input.value = '';
                     input.focus();
@@ -2437,32 +2365,53 @@
             }
         }
         
-        function verifyDevPassword() {
+        async function verifyDevPassword() {
+            const userNode = document.getElementById('devUsername');
             const input = document.getElementById('devPassword');
-            const error = document.querySelector('.dev-error');
-            if (!input) return;
+            const error = document.getElementById('devError');
+            if (!userNode || !input) return;
             
-            const password = input.value.trim();
-            
-            if (password === DEV_PASSWORD) {
-                // 密码正确，隐藏覆盖层
-                const overlay = document.getElementById(currentDevPage === 'vote' ? 'voteOverlay' : 'submitOverlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
-                closeDevModal();
-                
-                // 恢复投稿按钮
-                enableSubmitButtons();
-            } else {
-                // 密码错误
+            const username = userNode.value.trim();
+            const password = input.value;
+            if (!username || !password) {
                 if (error) {
-                    error.textContent = '密码错误，请重试';
+                    error.textContent = '账号与密码不可为空';
                     error.classList.add('show');
                 }
-                input.value = '';
-                input.focus();
+                return;
             }
+            
+            const secretHash = await hashPassword(password);
+            fetch('auth_provider.php?action=login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: username, password: secretHash})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const overlay = document.getElementById('submitOverlay');
+                    if (overlay) {
+                        overlay.classList.remove('active');
+                    }
+                    closeDevModal();
+                    enableSubmitButtons();
+                    alert('管理身份验证通过！已临时开放当前测试面板。');
+                } else {
+                    if (error) {
+                        error.textContent = data.message || '账户错误或时效到期，拒绝开启';
+                        error.classList.add('show');
+                    }
+                    input.value = '';
+                    input.focus();
+                }
+            })
+            .catch(() => {
+                if (error) {
+                    error.textContent = '通信鉴权失败';
+                    error.classList.add('show');
+                }
+            });
         }
         
         // 恢复投稿按钮
@@ -2511,7 +2460,6 @@
         });
     </script>
     
-    <!-- 全局音乐管理器 -->
     <script src="../music_manager.js"></script>
 </body>
 </html>

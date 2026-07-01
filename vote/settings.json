@@ -1,9 +1,73 @@
 {
-    "vote_enabled": true,
-    "submit_enabled": false,
-    "vote_closed_message": "<div style='text-align:center'><i class='fas fa-clock' style='font-size:80px;color:#004d99;margin-bottom:20px;animation:pulse 2s infinite;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;'>还未开启投票，请耐心等待<\/p><\/div>",
-    "submit_closed_message": "<div style='text-align:center'><i class='fas fa-clock' style='font-size:80px;color:#004d99;margin-bottom:20px;animation:pulse 2s infinite;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;'>暂未开启投稿，请耐心等待<\/p><\/div>",
+    "vote_mode": "always_on",
+    "submit_mode": "always_on",
+    "vote_closed_config": {
+        "title": "还未开启投票，请耐心等待",
+        "subtitle": "",
+        "icon": "fa-lock",
+        "color": "#004d99"
+    },
+    "submit_closed_config": {
+        "title": "投稿已结束，请移步至投票页",
+        "subtitle": "",
+        "icon": "fa-ban",
+        "color": "#004d99"
+    },
+    "vote_schedules": [
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "12:10",
+            "end_time": "14:10"
+        },
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "17:25",
+            "end_time": "18:30"
+        },
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "22:20",
+            "end_time": "23:59"
+        },
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "00:00",
+            "end_time": "07:00"
+        }
+    ],
+    "submit_schedules": [
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "00:00",
+            "end_time": "07:00"
+        },
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "12:10",
+            "end_time": "14:10"
+        },
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "17:25",
+            "end_time": "18:30"
+        },
+        {
+            "period": "daily",
+            "days": [],
+            "start_time": "22:20",
+            "end_time": "23:59"
+        }
+    ],
+    "vote_closed_message": "<div style='text-align:center;'><i class='fas fa-lock' style='font-size:80px;color:#004d99;margin-bottom:20px;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;margin-bottom:5px;'>还未开启投票，请耐心等待<\/p><\/div>",
+    "submit_closed_message": "<div style='text-align:center;'><i class='fas fa-ban' style='font-size:80px;color:#004d99;margin-bottom:20px;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;margin-bottom:5px;'>投稿已结束，请移步至投票页<\/p><\/div>",
     "vote_closed_icon": "",
     "submit_closed_icon": "",
-    "updated_at": "2026-05-03 16:35:10"
+    "updated_at": "2026-06-30 20:18:45"
 }

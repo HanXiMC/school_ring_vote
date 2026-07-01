@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超级管理员中心 - 起床铃系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #4a6cf7; 
+            --primary-light: #6381ff;
+            --text: #1e293b; 
+            --text-light: #64748b;
+            --bg: #f8fafc; 
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h2 { color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        input, select, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; outline: none; }
+        button { background: var(--primary); color: #fff; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { opacity: 0.9; }
+        .form-group { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 10px; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f1f5f9; }
+        .btn-danger { background: #ff6b6b; } .btn-warn { background: #f59e0b; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: #fff; padding: 50px; border-radius: 24px; box-shadow: var(--shadow-lg); text-align: center; width: 90%; max-width: 440px; border: 1px solid #eee; }
+        .login-box h3 { margin-bottom: 20px; font-size: 24px; }
+        .login-box input { width: 100%; margin-bottom: 15px; padding: 14px; }
+        .login-box button { width: 100%; padding: 14px; background: var(--primary); font-size: 16px; }
+        #force-password-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        .modal-box { background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 420px; text-align: center; }
+        .modal-box input { width: 100%; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay" style="display: none;">
+        <div class="login-box">
+            <div style="font-size:48px;color:var(--primary);margin-bottom:15px;"><i class="fas fa-shield-alt"></i></div>
+            <h3>超级管理员验证</h3>
+            <input type="text" id="admin-user" placeholder="请输入超级管理员账号">
+            <input type="password" id="admin-pwd" placeholder="请输入超级管理员密码" onkeypress="if(event.key==='Enter') login()">
+            <button onclick="login()">登 录</button>
+        </div>
+    </div>
+
+    <div id="force-password-modal" style="display: none;">
+        <div class="modal-box">
+            <div style="font-size:48px;color:#f59e0b;margin-bottom:15px;"><i class="fas fa-key"></i></div>
+            <h3 style="margin-bottom:10px;">首次登录强制改密</h3>
+            <p style="color:var(--text-light);font-size:13px;margin-bottom:20px;">检测到该账户仍在使用初始密码，请修改后才能进入中心。</p>
+            <input type="password" id="new-password" placeholder="输入全新安全超管密码">
+            <input type="password" id="confirm-password" placeholder="再次确认输入密码">
+            <button onclick="forceChangePassword()" style="width:100%; padding:14px; background:#10b981;">提交激活账号</button>
+        </div>
+    </div>
+
+    <div class="container" id="app-container" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2><i class="fas fa-shield-alt"></i> 超级管理员权限下发中心</h2>
+            <div style="display:flex; gap:10px;">
+                <button onclick="window.location.href='index.html'" style="background:var(--primary-light); padding:8px 16px;"><i class="fas fa-tasks"></i> 进入业务管理后台</button>
+                <button onclick="logout()" style="background:#ff6b6b; padding:8px 16px;"><i class="fas fa-sign-out-alt"></i> 安全退出</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <input type="text" id="username" placeholder="创建新账号名">
+            <select id="role">
+                <option value="admin">普通管理员 (部长权限)</option>
+                <option value="temp">临时管理员 (部员培训权限)</option>
+            </select>
+            <input type="number" id="days" placeholder="时效限制天数 (0代表永久)">
+            <button onclick="createAccount()"><i class="fas fa-plus"></i> 分配下发账号</button>
+        </div>
+
+        <h3><i class="fas fa-users"></i> 系统现存账号列表</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>账号名称</th>
+                    <th>角色权限</th>
+                    <th>自动过期截止时间</th>
+                    <th>权限下发人</th>
+                    <th>管理操作</th>
+                </tr>
+            </thead>
+            <tbody id="account-list"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function hashPassword(password) {
+            const msgUint8 = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function checkLogin() {
+            fetch('/submit/auth_provider.php?action=check_login')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        if (data.role !== 'super') {
+                            alert('账户权限不足'); window.location.href = 'index.html'; return;
+                        }
+                        document.getElementById('login-overlay').style.display = 'none';
+                        if (data.is_first_login) {
+                            document.getElementById('force-password-modal').style.display = 'flex';
+                        } else {
+                            document.getElementById('app-container').style.display = 'block';
+                            loadAccounts();
+                        }
+                    } else {
+                        document.getElementById('login-overlay').style.display = 'flex';
+                        document.getElementById('app-container').style.display = 'none';
+                    }
+                });
+        }
+
+        async function login() {
+            const user = document.getElementById('admin-user').value.trim();
+            const pwd = document.getElementById('admin-pwd').value;
+            if(!user || !pwd) return alert('请输入账号密码');
+            const secretHash = await hashPassword(pwd);
+            
+            fetch('/submit/auth_provider.php?action=login', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: user, password: secretHash})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.role !== 'super') { alert('无权登录此控制台'); logout(); return; }
+                    location.reload();
+                } else { alert(data.message); }
+            });
+        }
+
+        async function forceChangePassword() {
+            const p1 = document.getElementById('new-password').value;
+            const p2 = document.getElementById('confirm-password').value;
+            if(!p1 || p1.length < 6) return alert('新密码不可少于6位');
+            if(p1 !== p2) return alert('两次密码输入不匹配');
+            
+            const finalHash = await hashPassword(p1);
+            fetch('/submit/auth_provider.php?action=change_password', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({new_password: finalHash})
+            })
+            .then(res => res.json())
+            .then(data => { if(data.status === 'success') location.reload(); else alert(data.message); });
+        }
+
+        function loadAccounts() {
+            fetch('/submit/auth_provider.php?action=list_accounts')
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status !== 'success') return;
+                    const tbody = document.getElementById('account-list');
+                    tbody.innerHTML = '';
+                    res.data.forEach(user => {
+                        if (user.username === 'superadmin') return;
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><b>${user.username}</b></td>
+                                <td>${user.role === 'admin' ? '<span style="color:blue">普通管理员</span>' : '<span style="color:gray">临时部员</span>'}</td>
+                                <td>${user.expires_at}</td>
+                                <td>${user.created_by}</td>
+                                <td>
+                                    <button class="btn-warn" style="padding: 6px 12px; font-size:12px;" onclick="resetPassword('${user.username}')">重置密(111111)</button>
+                                    <button class="btn-danger" style="padding: 6px 12px; font-size:12px;" onclick="deleteAccount('${user.username}')">注销销户</button>
+                                </td>
+                            </tr>`;
+                    });
+                });
+        }
+
+        function createAccount() {
+            const username = document.getElementById('username').value.trim();
+            const role = document.getElementById('role').value;
+            const days = document.getElementById('days').value;
+            if(!username) return alert('账名不能为空');
+            
+            fetch('/submit/auth_provider.php?action=add_account', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, role, days})
+            }).then(res => res.json()).then(res => {
+                if(res.status === 'success') { document.getElementById('username').value = ''; loadAccounts(); } else alert(res.message);
+            });
+        }
+
+        function resetPassword(username) {
+            if(!confirm('确定重置该账号密码为 111111 吗？')) return;
+            fetch('/submit/auth_provider.php?action=reset_password', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username})
+            }).then(res => res.json()).then(res => { if(res.status === 'success') alert('已重置'); });
+        }
+
+        function deleteAccount(username) {
+            if(!confirm('确定注销此账户吗？')) return;
+            fetch('/submit/auth_provider.php?action=delete_account', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username})
+            }).then(() => loadAccounts());
+        }
+
+        function logout() { fetch('/submit/auth_provider.php?action=logout').then(() => location.reload()); }
+        document.addEventListener('DOMContentLoaded', checkLogin);
+    </script>
+</body>
+</html>

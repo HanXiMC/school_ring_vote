@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 ini_set('display_errors', 0);
 error_reporting(0);
-
+date_default_timezone_set('Asia/Shanghai');
 define('ANNOUNCEMENT_FILE', '/www/sites/rczx.asia/index/announcement.txt');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

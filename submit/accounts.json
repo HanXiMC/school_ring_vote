@@ -1,0 +1,98 @@
+{
+    "superadmin": {
+        "username": "superadmin",
+        "password": "$2y$12$r5UXi6F1LMh8kHHxlbXx.uUkdzdIQKLXMxY3InlxvAT\/UU5dkWryC",
+        "role": "super",
+        "is_first_login": false,
+        "expires_at": null,
+        "created_by": "system"
+    },
+    "admin": {
+        "username": "admin",
+        "password": "$2y$12$12b7.EsQHgtC4jHharDV..j7yQjFYOdwqcvfD5tZNPF8E4XOAJCTG",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": null,
+        "created_by": "superadmin"
+    },
+    "张瑞": {
+        "username": "张瑞",
+        "password": "$2y$12$Q1a1jfk3zkxpF3TGTYm36uNLjoK432TYGez0\/e1SbB9hl1k9.HEG2",
+        "role": "admin",
+        "is_first_login": true,
+        "expires_at": 1814359857,
+        "created_by": "superadmin"
+    },
+    "李子西": {
+        "username": "李子西",
+        "password": "$2y$12$dLygiQx0fuS\/wW98whppaOQvwfCjrv4e.EB7y2Mpgx\/IFesrwxzS.",
+        "role": "admin",
+        "is_first_login": true,
+        "expires_at": 1814359864,
+        "created_by": "superadmin"
+    },
+    "陈子洋": {
+        "username": "陈子洋",
+        "password": "$2y$12$3aP4PgbwL\/t63DbhJLuZM.TjDIUS6XN44s57B4sxeG\/sFMkDA8Pf6",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": 1814359880,
+        "created_by": "superadmin"
+    },
+    "王天瑞": {
+        "username": "王天瑞",
+        "password": "$2y$12$aKatCCN.OwH7FcbZgtJ1p.q63cZPyv7LUCcjOeRzoeG541CRuqXr2",
+        "role": "admin",
+        "is_first_login": true,
+        "expires_at": 1814359894,
+        "created_by": "superadmin"
+    },
+    "段翎莹": {
+        "username": "段翎莹",
+        "password": "$2y$12$eN12zzOLJWnNpfcWM.d8FO7IQMtCAApQgjF\/wggeNh5yxVtdOq3ve",
+        "role": "admin",
+        "is_first_login": true,
+        "expires_at": 1814359897,
+        "created_by": "superadmin"
+    },
+    "黎虹辛": {
+        "username": "黎虹辛",
+        "password": "$2y$12$k9dVgnqtQqAlFkN7G.wCBOcArTrgl98vUnSJu7wdBeMvMVa0pN3Hu",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": 1814359905,
+        "created_by": "superadmin"
+    },
+    "李冠宏": {
+        "username": "李冠宏",
+        "password": "$2y$12$pxCGogCCMEHaFYB0D0TWvuGTR.WvLZByOF..qrNL0x5lryJHyBtJm",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": 1814359914,
+        "created_by": "superadmin"
+    },
+    "周鋆君": {
+        "username": "周鋆君",
+        "password": "$2y$12$te20rjaOMcWponBIV9jQr.wBp3MR6vdhz6wqT3zU0EtHroj6YKAWy",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": 1814359935,
+        "created_by": "superadmin"
+    },
+    "张琳": {
+        "username": "张琳",
+        "password": "$2y$12$3SaJfOArIk0eVK7el\/qLUuJoqdRGAP06ol97S8HIvMG5K2\/.xD8Y2",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": 1814359985,
+        "created_by": "superadmin"
+    },
+    "徐显皓": {
+        "username": "徐显皓",
+        "password": "$2y$12$gLQOFjLyqpqvJfogYpO7uuerNIDt15fvzYKSKsKO6iHuzktLFt98W",
+        "role": "admin",
+        "is_first_login": false,
+        "expires_at": 1814360027,
+        "created_by": "superadmin"
+    }
+}

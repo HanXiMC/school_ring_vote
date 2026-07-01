@@ -3,7 +3,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
+date_default_timezone_set('Asia/Shanghai');
 // 开启错误日志
 ini_set('log_errors', 1);
 ini_set('error_log', 'api_debug.log');

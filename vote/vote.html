@@ -1753,9 +1753,10 @@
     
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-content">
-            <h3><i class="fas fa-lock"></i> 管理员测试</h3>
-            <p>请输入管理员测试密码：</p>
-            <input type="password" id="devPassword" placeholder="输入密码...">
+            <h3><i class="fas fa-lock"></i> 管理员身份验证</h3>
+            <p style="margin-bottom: 10px; font-size:13px; color:#666;">请输入管理账户及密码临时解除关闭状态：</p>
+            <input type="text" id="devUsername" placeholder="请输入管理员/超级管理员账号" style="margin-bottom:10px;">
+            <input type="password" id="devPassword" placeholder="请输入密码...">
             <p class="dev-error" id="devError"></p>
             <div class="dev-modal-buttons">
                 <button class="dev-btn-cancel" onclick="closeDevModal()">取消</button>
@@ -2506,20 +2507,25 @@
             });
         }
         
-        // 开发者测试相关
-        const DEV_PASSWORD = 'xwbdszq';
+        // ==================== 【全新重构】：测试入口账号密码深度验证 ====================
+        async function hashPassword(password) {
+            const msgUint8 = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
         let currentDevPage = '';
         
         function showDevTestInput(page) {
             currentDevPage = page;
             const modal = document.getElementById('devModal');
+            const userNode = document.getElementById('devUsername');
             const input = document.getElementById('devPassword');
-            const error = document.querySelector('.dev-error');
+            const error = document.getElementById('devError');
             if (modal) {
                 modal.classList.add('active');
+                if (userNode) userNode.value = '';
                 if (input) {
                     input.value = '';
-                    input.focus();
                 }
                 if (error) error.classList.remove('show');
             }
@@ -2532,28 +2538,53 @@
             }
         }
         
-        function verifyDevPassword() {
+        async function verifyDevPassword() {
+            const userNode = document.getElementById('devUsername');
             const input = document.getElementById('devPassword');
-            const error = document.querySelector('.dev-error');
-            if (!input) return;
+            const error = document.getElementById('devError');
+            if (!userNode || !input) return;
             
-            const password = input.value.trim();
-            
-            if (password === DEV_PASSWORD) {
-                const overlay = document.getElementById(currentDevPage === 'vote' ? 'voteOverlay' : 'submitOverlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
-                closeDevModal();
-                enableVoteButtons();
-            } else {
+            const username = userNode.value.trim();
+            const password = input.value;
+            if (!username || !password) {
                 if (error) {
-                    error.textContent = '密码错误，请重试';
+                    error.textContent = '账号与密码不可为空';
                     error.classList.add('show');
                 }
-                input.value = '';
-                input.focus();
+                return;
             }
+            
+            const secretHash = await hashPassword(password);
+            fetch('../submit/auth_provider.php?action=login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: username, password: secretHash})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const overlay = document.getElementById('voteOverlay');
+                    if (overlay) {
+                        overlay.classList.remove('active');
+                    }
+                    closeDevModal();
+                    enableVoteButtons();
+                    alert('管理身份验证通过！已临时开放当前测试面板。');
+                } else {
+                    if (error) {
+                        error.textContent = data.message || '账户错误或时效到期，拒绝开启';
+                        error.classList.add('show');
+                    }
+                    input.value = '';
+                    input.focus();
+                }
+            })
+            .catch(() => {
+                if (error) {
+                    error.textContent = '通信鉴权失败';
+                    error.classList.add('show');
+                }
+            });
         }
         
         function enableVoteButtons() {

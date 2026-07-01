@@ -3,7 +3,7 @@
 header("Content-Type: application/json");
 header("Cache-Control: no-cache, must-revalidate");
 header("Access-Control-Allow-Origin: *");
-
+date_default_timezone_set('Asia/Shanghai');
 // 投票记录文件路径
 $recordsFile = __DIR__ . '/vote_records.txt';
 
