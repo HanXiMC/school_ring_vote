@@ -1,6 +1,6 @@
 {
-    "vote_mode": "always_on",
-    "submit_mode": "always_on",
+    "vote_mode": "always_off",
+    "submit_mode": "always_off",
     "vote_closed_config": {
         "title": "还未开启投票，请耐心等待",
         "subtitle": "",
@@ -8,7 +8,7 @@
         "color": "#004d99"
     },
     "submit_closed_config": {
-        "title": "投稿已结束，请移步至投票页",
+        "title": "\\WEB-INF\\web.xml",
         "subtitle": "",
         "icon": "fa-ban",
         "color": "#004d99"
@@ -66,8 +66,8 @@
         }
     ],
     "vote_closed_message": "<div style='text-align:center;'><i class='fas fa-lock' style='font-size:80px;color:#004d99;margin-bottom:20px;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;margin-bottom:5px;'>还未开启投票，请耐心等待<\/p><\/div>",
-    "submit_closed_message": "<div style='text-align:center;'><i class='fas fa-ban' style='font-size:80px;color:#004d99;margin-bottom:20px;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;margin-bottom:5px;'>投稿已结束，请移步至投票页<\/p><\/div>",
+    "submit_closed_message": "<div style='text-align:center;'><i class='fas fa-ban' style='font-size:80px;color:#004d99;margin-bottom:20px;'><\/i><br><p style='font-size:20px;color:#004d99;font-weight:bold;margin-bottom:5px;'>\\WEB-INF\\web.xml<\/p><\/div>",
     "vote_closed_icon": "",
     "submit_closed_icon": "",
-    "updated_at": "2026-06-30 20:18:45"
+    "updated_at": "2026-07-02 13:29:51"
 }

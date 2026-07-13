@@ -38,71 +38,9 @@
         }
     ],
     "submissions": {
-        "all": [
-            {
-                "id": 1357375695,
-                "name": "海阔天空",
-                "artist": "Beyond",
-                "album": "华纳廿三周年纪念精选系列 - B﻿eyond",
-                "picUrl": "https:\/\/p3.music.126.net\/q6cm6Pk70YArijk1_QDoEg==\/109951163984013003.jpg",
-                "source": "netease",
-                "timestamp": "2026-06-30 21:04:19",
-                "ai_passed": 0
-            },
-            {
-                "id": 349981,
-                "name": "半点心",
-                "artist": "草蜢",
-                "album": "Grasshopper Ⅳ",
-                "picUrl": "https:\/\/p4.music.126.net\/n9lKjrDlYFGrEjZkLwhL0w==\/109951169342451691.jpg",
-                "source": "netease",
-                "timestamp": "2026-06-30 20:43:21",
-                "ai_passed": 0
-            },
-            {
-                "id": 3333503413,
-                "name": "橹穆双人舞台-来自天堂的魔鬼",
-                "artist": "Meow",
-                "album": "新年音乐会",
-                "picUrl": "https:\/\/p4.music.126.net\/-3KMqRwI4AfrpeBRcnbmpg==\/109951172501743706.jpg",
-                "source": "netease",
-                "timestamp": "2026-06-30 20:42:57",
-                "ai_passed": 0
-            }
-        ],
+        "all": [],
         "approved": [],
-        "rejected": [
-            {
-                "id": 1357375695,
-                "name": "海阔天空",
-                "artist": "Beyond",
-                "album": "华纳廿三周年纪念精选系列 - B﻿eyond",
-                "picUrl": "https:\/\/p3.music.126.net\/q6cm6Pk70YArijk1_QDoEg==\/109951163984013003.jpg",
-                "source": "netease",
-                "timestamp": "2026-06-30 21:04:19",
-                "ai_passed": 0
-            },
-            {
-                "id": 349981,
-                "name": "半点心",
-                "artist": "草蜢",
-                "album": "Grasshopper Ⅳ",
-                "picUrl": "https:\/\/p4.music.126.net\/n9lKjrDlYFGrEjZkLwhL0w==\/109951169342451691.jpg",
-                "source": "netease",
-                "timestamp": "2026-06-30 20:43:21",
-                "ai_passed": 0
-            },
-            {
-                "id": 3333503413,
-                "name": "橹穆双人舞台-来自天堂的魔鬼",
-                "artist": "Meow",
-                "album": "新年音乐会",
-                "picUrl": "https:\/\/p4.music.126.net\/-3KMqRwI4AfrpeBRcnbmpg==\/109951172501743706.jpg",
-                "source": "netease",
-                "timestamp": "2026-06-30 20:42:57",
-                "ai_passed": 0
-            }
-        ]
+        "rejected": []
     },
     "last_cleanup_month": "2026-06",
     "announcement": "2026.03.05\n新增Q&amp;A板块",
